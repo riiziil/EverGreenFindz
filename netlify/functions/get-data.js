@@ -16,7 +16,7 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const dataPath = path.join(__dirname, '../../data/products.json');
+    const dataPath = path.join(process.env.LAMBDA_TASK_ROOT || path.join(__dirname, '../..'), 'data/products.json');
     const raw = fs.readFileSync(dataPath, 'utf8');
     return {
       statusCode: 200,
