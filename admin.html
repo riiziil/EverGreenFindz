@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EverGreenFindz Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#ffffff;
+  --off-white:#f8faf8;
+  --sage-50:#f2f6f2;
+  --sage-100:#e2ece2;
+  --sage-200:#c4d9c4;
+  --sage-300:#96bc96;
+  --sage-400:#6a9f6a;
+  --sage-500:#4a8050;
+  --sage-600:#3a6640;
+  --black:#0f0f0f;
+  --ink:#1c1c1c;
+  --muted:#6a7a6a;
+  --border:#dce8dc;
+  --red:#c0392b;
+  --red-light:#fff0ee;
+  --blue:#2c5fe5;
+  --blue-light:#eef2ff;
+  --fd:'Cormorant Garamond',Georgia,serif;
+  --fb:'Jost',sans-serif;
+  --r:10px;
+  --sh:0 2px 16px rgba(0,0,0,.06);
+  --sh-md:0 6px 28px rgba(0,0,0,.10);
+  --sidebar-w:240px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--off-white);color:var(--ink);font-size:15px;line-height:1.6;min-height:100vh}
+button,input,select,textarea{font-family:var(--fb)}
+a{color:inherit;text-decoration:none}
+img{display:block;width:100%;object-fit:cover}
+
+/* LOGIN */
+.login-screen{
+  display:none;position:fixed;inset:0;
+  background:var(--off-white);z-index:9999;
+  align-items:center;justify-content:center;
+}
+.login-screen.show{display:flex}
+.login-box{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:380px;
+  box-shadow:var(--sh-md);text-align:center;
+}
+.login-logo{font-family:var(--fd);font-size:1.8rem;font-weight:600;color:var(--black);margin-bottom:.3rem}
+.login-logo span{color:var(--sage-500)}
+.login-subtitle{font-size:.82rem;color:var(--muted);margin-bottom:2rem}
+.login-box input{
+  width:100%;border:1.5px solid var(--border);border-radius:8px;
+  padding:.7rem 1rem;font-size:.9rem;outline:none;margin-bottom:.75rem;
+  color:var(--ink);background:var(--off-white);transition:border-color .2s;
+}
+.login-box input:focus{border-color:var(--sage-400);background:#fff}
+.login-box button{
+  width:100%;background:var(--sage-500);color:#fff;border:none;
+  border-radius:8px;padding:.75rem;font-size:.88rem;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background .2s;
+}
+.login-box button:hover{background:var(--sage-600)}
+.login-error{font-size:.78rem;color:var(--red);margin-top:.5rem;display:none}
+
+/* LAYOUT */
+.admin-shell{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar-w);background:var(--black);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:50;
+  transition:transform .3s;
+}
+.sidebar-logo{
+  padding:1.6rem 1.4rem 1.2rem;
+  font-family:var(--fd);font-size:1.35rem;font-weight:600;
+  color:#fff;letter-spacing:.02em;border-bottom:1px solid rgba(255,255,255,.08);
+  cursor:pointer;
+}
+.sidebar-logo span{color:var(--sage-400)}
+.sidebar-logo small{display:block;font-family:var(--fb);font-size:.65rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:2px}
+.sidebar-nav{flex:1;padding:1rem 0}
+.nav-group-label{padding:.5rem 1.4rem .3rem;font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:.7rem 1.4rem;cursor:pointer;
+  font-size:.85rem;font-weight:500;color:rgba(255,255,255,.5);
+  transition:all .2s;border-left:2px solid transparent;
+  margin-bottom:1px;
+}
+.nav-item:hover{color:rgba(255,255,255,.9);background:rgba(255,255,255,.04)}
+.nav-item.active{color:#fff;background:rgba(255,255,255,.07);border-left-color:var(--sage-400)}
+.nav-item-icon{font-size:1rem;width:20px;text-align:center}
+.sidebar-footer{padding:1.2rem 1.4rem;border-top:1px solid rgba(255,255,255,.08)}
+.btn-logout{
+  display:flex;align-items:center;gap:8px;width:100%;
+  background:none;border:1px solid rgba(255,255,255,.15);border-radius:8px;
+  color:rgba(255,255,255,.5);padding:.6rem 1rem;
+  font-size:.78rem;font-weight:500;cursor:pointer;transition:all .2s;
+}
+.btn-logout:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9)}
+.view-site-btn{
+  display:flex;align-items:center;gap:8px;width:100%;
+  background:var(--sage-600);border:none;border-radius:8px;
+  color:#fff;padding:.6rem 1rem;
+  font-size:.78rem;font-weight:500;cursor:pointer;transition:background .2s;
+  margin-bottom:.6rem;
+}
+.view-site-btn:hover{background:var(--sage-500)}
+
+/* MAIN CONTENT */
+.main-content{
+  margin-left:var(--sidebar-w);flex:1;
+  display:flex;flex-direction:column;min-height:100vh;
+}
+.top-bar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:0 2rem;height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:40;
+}
+.top-bar-title{font-family:var(--fd);font-size:1.2rem;font-weight:600;color:var(--black)}
+.top-bar-actions{display:flex;gap:.75rem;align-items:center}
+.save-status{font-size:.75rem;color:var(--muted);font-weight:500}
+.save-status.saved{color:var(--sage-500)}
+.save-status.saving{color:var(--muted)}
+.save-status.error{color:var(--red)}
+
+/* PANELS */
+.panel{display:none;flex:1;padding:2rem}.panel.active{display:block}
+
+/* DASHBOARD */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2.5rem}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem 1.5rem}
+.stat-num{font-family:var(--fd);font-size:2.2rem;font-weight:600;color:var(--black);line-height:1}
+.stat-label{font-size:.78rem;color:var(--muted);margin-top:.3rem;font-weight:500;letter-spacing:.04em}
+.stat-icon{font-size:1.5rem;margin-bottom:.5rem}
+.recent-title{font-family:var(--fd);font-size:1.2rem;font-weight:600;margin-bottom:1rem;color:var(--black)}
+
+/* TABLES / LISTS */
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{
+  text-align:left;font-size:.68rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  padding:.6rem 1rem;background:var(--sage-50);
+  border-bottom:1px solid var(--border);
+}
+.data-table td{
+  padding:.85rem 1rem;font-size:.85rem;
+  border-bottom:1px solid var(--sage-50);vertical-align:middle;
+}
+.data-table tr:hover td{background:var(--sage-50)}
+.data-table tr:last-child td{border-bottom:none}
+.table-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+
+.product-thumb{
+  width:46px;height:46px;border-radius:8px;object-fit:cover;
+  background:var(--sage-100);display:flex;align-items:center;
+  justify-content:center;font-size:1.3rem;overflow:hidden;flex-shrink:0;
+}
+.product-thumb img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.product-name-cell{display:flex;align-items:center;gap:.85rem}
+.product-name-info h4{font-size:.88rem;font-weight:500;color:var(--black);margin-bottom:2px}
+.product-name-info span{font-size:.72rem;color:var(--muted)}
+.featured-star{color:var(--sage-500);font-size:.9rem}
+.badge{
+  display:inline-block;padding:2px 10px;border-radius:99px;
+  font-size:.67rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--sage-100);color:var(--sage-600);
+}
+.badge-red{background:var(--red-light);color:var(--red)}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  border-radius:8px;padding:.5rem 1rem;font-size:.8rem;font-weight:500;
+  cursor:pointer;transition:all .2s;border:none;
+}
+.btn-sage{background:var(--sage-500);color:#fff}
+.btn-sage:hover{background:var(--sage-600)}
+.btn-outline{background:var(--white);border:1.5px solid var(--border);color:var(--ink)}
+.btn-outline:hover{border-color:var(--sage-300);background:var(--sage-50)}
+.btn-ghost{background:none;border:none;color:var(--muted);font-size:.8rem;cursor:pointer;padding:.4rem .7rem;border-radius:6px}
+.btn-ghost:hover{background:var(--sage-50);color:var(--sage-600)}
+.btn-red{background:var(--red-light);color:var(--red);border:1px solid #f8c0b0}
+.btn-red:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-blue{background:var(--blue-light);color:var(--blue);border:1px solid #b0c8f8}
+.btn-blue:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-sm{padding:.35rem .75rem;font-size:.75rem}
+
+/* PANEL HEADER */
+.panel-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:1.8rem;flex-wrap:wrap;gap:1rem;
+}
+.panel-header h2{font-family:var(--fd);font-size:1.6rem;font-weight:600;color:var(--black)}
+.panel-header p{font-size:.82rem;color:var(--muted);margin-top:.2rem}
+
+/* MODAL */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.4);z-index:500;
+  align-items:center;justify-content:center;padding:1rem;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--white);border-radius:16px;
+  width:100%;max-width:640px;max-height:92vh;
+  overflow-y:auto;box-shadow:var(--sh-md);
+}
+.modal-header{
+  padding:1.5rem 1.8rem 1rem;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--white);z-index:1;
+}
+.modal-header h3{font-family:var(--fd);font-size:1.3rem;font-weight:600;color:var(--black)}
+.modal-close{
+  background:none;border:none;font-size:1.3rem;cursor:pointer;
+  color:var(--muted);line-height:1;padding:.3rem;border-radius:6px;transition:all .2s;
+}
+.modal-close:hover{background:var(--sage-50);color:var(--ink)}
+.modal-body{padding:1.5rem 1.8rem}
+.modal-footer{
+  padding:1rem 1.8rem 1.5rem;
+  display:flex;gap:.75rem;justify-content:flex-end;
+  border-top:1px solid var(--border);
+}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.form-grid.one{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:.35rem}
+.form-group.span2{grid-column:span 2}
+.form-label{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.form-label .req{color:var(--red)}
+.form-input,.form-select,.form-textarea{
+  border:1.5px solid var(--border);border-radius:8px;
+  padding:.6rem .9rem;font-size:.875rem;outline:none;
+  color:var(--ink);background:var(--off-white);transition:border-color .2s,background .2s;
+  width:100%;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--sage-400);background:#fff}
+.form-textarea{resize:vertical;min-height:85px;line-height:1.6}
+.form-hint{font-size:.72rem;color:var(--muted)}
+.img-preview{
+  width:100%;height:140px;border-radius:8px;border:1.5px dashed var(--border);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--sage-50);overflow:hidden;margin-top:.4rem;
+}
+.img-preview img{width:100%;height:100%;object-fit:cover;border-radius:6px}
+.img-preview-placeholder{font-size:2rem;color:var(--sage-300)}
+
+/* highlights */
+.highlights-editor{display:flex;flex-direction:column;gap:.5rem}
+.highlight-row{display:flex;gap:.5rem;align-items:center}
+.highlight-row input{flex:1}
+.btn-icon-sm{
+  width:30px;height:30px;border-radius:6px;border:1.5px solid var(--border);
+  background:var(--white);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:.8rem;transition:all .2s;flex-shrink:0;color:var(--muted);
+}
+.btn-icon-sm:hover{background:var(--red-light);border-color:var(--red);color:var(--red)}
+
+/* section tabs (inside panel) */
+.tab-row{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab-btn{
+  background:none;border:none;padding:.65rem 1.1rem;font-size:.82rem;font-weight:500;
+  cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:color .2s;letter-spacing:.02em;
+}
+.tab-btn.active{color:var(--sage-600);border-bottom-color:var(--sage-500)}
+.tab-btn:hover{color:var(--ink)}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* search bar */
+.search-row{display:flex;gap:.75rem;margin-bottom:1.3rem;align-items:center}
+.search-row input{
+  border:1.5px solid var(--border);border-radius:8px;
+  padding:.55rem .9rem;font-size:.85rem;outline:none;
+  width:260px;background:var(--white);color:var(--ink);transition:border-color .2s;
+}
+.search-row input:focus{border-color:var(--sage-400)}
+
+/* toast */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;
+  background:var(--black);color:#fff;padding:.75rem 1.4rem;
+  border-radius:10px;font-size:.82rem;font-weight:500;
+  z-index:9999;transition:all .3s;pointer-events:none;
+  transform:translateY(80px);opacity:0;
+  display:flex;align-items:center;gap:8px;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.toast-success{background:var(--sage-600)}
+.toast.toast-error{background:var(--red)}
+
+/* empty */
+.empty-state{
+  text-align:center;padding:3.5rem 1.5rem;color:var(--muted);
+}
+.empty-state-icon{font-size:2.5rem;margin-bottom:.75rem}
+.empty-state p{font-size:.88rem}
+
+/* loading */
+.loading{display:flex;align-items:center;justify-content:center;padding:3rem;gap:.75rem;color:var(--muted)}
+.spinner{width:22px;height:22px;border:2.5px solid var(--sage-100);border-top-color:var(--sage-500);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* confirm dialog */
+.confirm-dialog .modal{max-width:400px}
+
+/* responsive */
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .form-group.span2{grid-column:span 1}
+}
+@media(max-width:700px){
+  :root{--sidebar-w:0px}
+  .sidebar{transform:translateX(-240px);width:240px}
+  .sidebar.open{transform:translateX(0)}
+  .main-content{margin-left:0}
+  .hamburger-admin{display:flex!important}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+.hamburger-admin{
+  display:none;cursor:pointer;flex-direction:column;gap:4px;
+  background:none;border:none;padding:.4rem;
+}
+.hamburger-admin span{display:block;width:20px;height:1.5px;background:var(--ink);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen show" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Pick<span>Wise</span></div>
+    <div class="login-subtitle">Admin Panel — Sign In</div>
+    <input type="text" id="loginUser" placeholder="Username" autocomplete="username"/>
+    <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="loginError">Incorrect credentials. Try again.</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ADMIN SHELL -->
+<div class="admin-shell" id="adminShell" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo" onclick="openExternal('index.html')">
+      Pick<span>Wise</span>
+      <small>Admin Panel</small>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Main</div>
+      <div class="nav-item active" data-panel="dashboard" onclick="switchPanel('dashboard',this)">
+        <span class="nav-item-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" data-panel="products" onclick="switchPanel('products',this)">
+        <span class="nav-item-icon">📦</span> Products
+      </div>
+      <div class="nav-item" data-panel="categories" onclick="switchPanel('categories',this)">
+        <span class="nav-item-icon">🗂</span> Categories
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="view-site-btn" onclick="openExternal('index.html')">🌐 View Site</button>
+      <button class="btn-logout" onclick="doLogout()">← Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="top-bar">
+      <div style="display:flex;align-items:center;gap:1rem">
+        <button class="hamburger-admin" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+        <span class="top-bar-title" id="topBarTitle">Dashboard</span>
+      </div>
+      <div class="top-bar-actions">
+        <span class="save-status" id="saveStatus"></span>
+      </div>
+    </header>
+
+    <!-- DASHBOARD PANEL -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="panel-header">
+        <div><h2>Welcome back 👋</h2><p>Here's a quick overview of your EverGreenFindz content.</p></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-num" id="stat-products">—</div><div class="stat-label">Total Products</div></div>
+        <div class="stat-card"><div class="stat-icon">🗂</div><div class="stat-num" id="stat-categories">—</div><div class="stat-label">Categories</div></div>
+        <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num" id="stat-featured">—</div><div class="stat-label">Featured Post</div></div>
+        <div class="stat-card"><div class="stat-icon">🛒</div><div class="stat-num" id="stat-links">—</div><div class="stat-label">Affiliate Links</div></div>
+      </div>
+      <div class="recent-title">Recent Products</div>
+      <div class="table-wrap" id="recentTable"></div>
+    </div>
+
+    <!-- PRODUCTS PANEL -->
+    <div class="panel" id="panel-products">
+      <div class="panel-header">
+        <div><h2>Products</h2><p>Add, edit, or remove affiliate product posts.</p></div>
+        <button class="btn btn-sage" onclick="openProductModal()">＋ Add Product</button>
+      </div>
+      <div class="search-row">
+        <input type="text" placeholder="Search products…" oninput="filterProductTable(this.value)" id="productSearch"/>
+        <select class="form-select" style="width:160px" id="productCatFilter" onchange="filterProductTable(document.getElementById('productSearch').value)">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="productTable">
+          <thead><tr><th>Product</th><th>Category</th><th>Rating</th><th>Links</th><th>Featured</th><th>Actions</th></tr></thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CATEGORIES PANEL -->
+    <div class="panel" id="panel-categories">
+      <div class="panel-header">
+        <div><h2>Categories</h2><p>Manage the categories shown on your site.</p></div>
+        <button class="btn btn-sage" onclick="openCatModal()">＋ Add Category</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="catTable">
+          <thead><tr><th>Emoji</th><th>Label</th><th>Slug</th><th>Description</th><th>Products</th><th>Actions</th></tr></thead>
+          <tbody id="catTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="productModalTitle">Add Product</h3>
+      <button class="modal-close" onclick="closeProductModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group span2">
+          <label class="form-label">Product Name <span class="req">*</span></label>
+          <input class="form-input" id="f-name" placeholder="e.g. Wireless Earbuds Pro"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category <span class="req">*</span></label>
+          <select class="form-select" id="f-cat"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rating (1–5)</label>
+          <input class="form-input" id="f-rating" type="number" min="1" max="5" step="0.1" placeholder="4.5"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Review Count</label>
+          <input class="form-input" id="f-reviews" type="number" placeholder="1200"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Featured Post?</label>
+          <select class="form-select" id="f-featured">
+            <option value="false">No</option>
+            <option value="true">Yes — show as featured</option>
+          </select>
+        </div>
+        <div class="form-group span2">
+          <label class="form-label">Image URL</label>
+          <input class="form-input" id="f-image" placeholder="https://images.unsplash.com/…" oninput="previewImage(this.value)"/>
+          <div class="form-hint">Paste any direct image URL (Unsplash, Cloudinary, etc.)</div>
+          <div class="img-preview" id="imgPreview"><div class="img-preview-placeholder">🖼</div></div>
+        </div>
+        <div class="form-group span2">
+          <label class="form-label">Short Description <span class="req">*</span></label>
+          <textarea class="form-textarea" id="f-short" placeholder="1–2 sentences shown on the card preview…" style="min-height:65px"></textarea>
+        </div>
+        <div class="form-group span2">
+          <label class="form-label">Full Description <span class="req">*</span></label>
+          <textarea class="form-textarea" id="f-desc" placeholder="Detailed review shown on the product page…"></textarea>
+        </div>
+        <div class="form-group span2">
+          <label class="form-label">Key Highlights <span style="font-weight:400;text-transform:none;letter-spacing:0">(bullet points)</span></label>
+          <div class="highlights-editor" id="highlightsEditor"></div>
+          <button class="btn btn-outline btn-sm" style="margin-top:.5rem;width:fit-content" onclick="addHighlight()">＋ Add Highlight</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">🛒 Amazon Link</label>
+          <input class="form-input" id="f-amazon" type="url" placeholder="https://amzn.to/…"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">🎵 TikTok Shop Link</label>
+          <input class="form-input" id="f-tiktok" type="url" placeholder="https://www.tiktok.com/…"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">🛍 Shopee Link</label>
+          <input class="form-input" id="f-shopee" type="url" placeholder="https://shopee.ph/…"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-red" id="btnDeleteProduct" onclick="deleteProduct()" style="display:none;margin-right:auto">🗑 Delete</button>
+      <button class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
+      <button class="btn btn-sage" onclick="saveProduct()">💾 Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="modal-overlay" id="catModal">
+  <div class="modal confirm-dialog">
+    <div class="modal-header">
+      <h3 id="catModalTitle">Add Category</h3>
+      <button class="modal-close" onclick="closeCatModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Emoji <span class="req">*</span></label>
+          <input class="form-input" id="fc-emoji" placeholder="e.g. 🏠" maxlength="4"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Label <span class="req">*</span></label>
+          <input class="form-input" id="fc-label" placeholder="e.g. Home"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Slug <span class="req">*</span></label>
+          <input class="form-input" id="fc-slug" placeholder="e.g. home" oninput="this.value=this.value.toLowerCase().replace(/\s/g,'-')"/>
+          <span class="form-hint">Lowercase, no spaces (auto-fills from label)</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input class="form-input" id="fc-desc" placeholder="Short description…"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-red" id="btnDeleteCat" onclick="deleteCategory()" style="display:none;margin-right:auto">🗑 Delete</button>
+      <button class="btn btn-outline" onclick="closeCatModal()">Cancel</button>
+      <button class="btn btn-sage" onclick="saveCategory()">💾 Save Category</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════
+   CONFIG
+══════════════════════════ */
+const API_BASE = '';
+const ADMIN_SECRET = localStorage.getItem('pw_secret') || '';
+
+// Credentials (change these or move to env in production)
+const ADMIN_USER = 'iamevergreen';
+const ADMIN_PASS = '100516050904.';
+
+/* ══════════════════════════
+   AUTH
+══════════════════════════ */
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    const secret = 'changeme123'; // must match ADMIN_SECRET env var on Netlify
+    localStorage.setItem('pw_secret', secret);
+    localStorage.setItem('pw_auth', '1');
+    document.getElementById('loginScreen').classList.remove('show');
+    document.getElementById('adminShell').style.display = 'flex';
+    init();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('pw_auth');
+  location.reload();
+}
+
+function checkAuth() {
+  if (localStorage.getItem('pw_auth') === '1') {
+    document.getElementById('loginScreen').classList.remove('show');
+    document.getElementById('adminShell').style.display = 'flex';
+    return true;
+  }
+  return false;
+}
+
+/* ══════════════════════════
+   STATE
+══════════════════════════ */
+let DATA = { categories: [], products: [] };
+let editingProductId = null;
+let editingCatId = null;
+
+/* ══════════════════════════
+   INIT
+══════════════════════════ */
+async function init() {
+  await loadData();
+  renderDashboard();
+  renderProductTable();
+  renderCatTable();
+  populateCatSelects();
+}
+
+async function loadData() {
+  try {
+    const secret = localStorage.getItem('pw_secret') || 'changeme123';
+    const res = await fetch(API_BASE + '/.netlify/functions/get-data', {
+      headers: { 'x-admin-secret': secret }
+    });
+    if (!res.ok) throw new Error();
+    DATA = await res.json();
+    setSaveStatus('saved', '✓ Synced');
+  } catch {
+    // fallback to localStorage
+    const cached = localStorage.getItem('pw_data');
+    if (cached) { DATA = JSON.parse(cached); setSaveStatus('', '(offline mode)'); }
+    else { DATA = { categories: [], products: [] }; }
+  }
+}
+
+async function saveData() {
+  setSaveStatus('saving', 'Saving…');
+  // always save to localStorage as backup
+  localStorage.setItem('pw_data', JSON.stringify(DATA));
+  try {
+    const secret = localStorage.getItem('pw_secret') || 'changeme123';
+    const res = await fetch(API_BASE + '/.netlify/functions/save-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
+      body: JSON.stringify(DATA),
+    });
+    if (!res.ok) throw new Error();
+    setSaveStatus('saved', '✓ Saved');
+    showToast('Changes saved!', 'success');
+  } catch {
+    setSaveStatus('error', '⚠ Save failed (saved locally)');
+    showToast('Saved locally — could not reach server', 'error');
+  }
+}
+
+function setSaveStatus(cls, msg) {
+  const el = document.getElementById('saveStatus');
+  el.className = 'save-status' + (cls ? ' ' + cls : '');
+  el.textContent = msg;
+}
+
+/* ══════════════════════════
+   DASHBOARD
+══════════════════════════ */
+function renderDashboard() {
+  document.getElementById('stat-products').textContent = DATA.products.length;
+  document.getElementById('stat-categories').textContent = DATA.categories.length;
+  const featured = DATA.products.find(p=>p.featured);
+  document.getElementById('stat-featured').textContent = featured ? '1' : '0';
+  const links = DATA.products.reduce((n,p)=>{
+    if(p.amazonLink&&p.amazonLink.length>5) n++;
+    if(p.tiktokLink&&p.tiktokLink.length>5) n++;
+    if(p.shopeeLink&&p.shopeeLink.length>5) n++;
+    return n;
+  }, 0);
+  document.getElementById('stat-links').textContent = links;
+
+  const recent = DATA.products.slice(0,5);
+  document.getElementById('recentTable').innerHTML = recent.length === 0
+    ? `<div class="empty-state"><div class="empty-state-icon">📭</div><p>No products yet. Add your first one!</p></div>`
+    : `<table class="data-table"><thead><tr><th>Product</th><th>Category</th><th>Rating</th><th></th></tr></thead><tbody>
+      ${recent.map(p => {
+        const cat = DATA.categories.find(c=>c.slug===p.category)||{};
+        return `<tr>
+          <td><div class="product-name-cell">
+            <div class="product-thumb">${p.image ? `<img src="${p.image}" alt=""/>` : (cat.emoji||'🛍')}</div>
+            <div class="product-name-info"><h4>${p.name}</h4><span>${p.date||''}</span></div>
+          </div></td>
+          <td><span class="badge">${cat.emoji||''} ${cat.label||p.category}</span></td>
+          <td>★ ${p.rating||'—'}</td>
+          <td><button class="btn btn-blue btn-sm" onclick="switchPanel('products');editProduct('${p.id}')">Edit</button></td>
+        </tr>`;
+      }).join('')}
+    </tbody></table>`;
+}
+
+/* ══════════════════════════
+   PRODUCT TABLE
+══════════════════════════ */
+function renderProductTable(list) {
+  const products = list || DATA.products;
+  const tbody = document.getElementById('productTableBody');
+  if (products.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">📭</div><p>No products yet.</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = products.map(p => {
+    const cat = DATA.categories.find(c=>c.slug===p.category)||{};
+    const linkCount = [p.amazonLink,p.tiktokLink,p.shopeeLink].filter(l=>l&&l.length>5).length;
+    return `<tr>
+      <td><div class="product-name-cell">
+        <div class="product-thumb">${p.image ? `<img src="${p.image}" alt=""/>` : (cat.emoji||'🛍')}</div>
+        <div class="product-name-info"><h4>${p.name}</h4><span>${p.shortDesc ? p.shortDesc.substring(0,50)+'…' : ''}</span></div>
+      </div></td>
+      <td><span class="badge">${cat.emoji||''} ${cat.label||p.category}</span></td>
+      <td>★ ${p.rating||'—'} <span style="color:var(--muted);font-size:.72rem">(${(p.reviews||0).toLocaleString()})</span></td>
+      <td><span style="font-size:.78rem;color:var(--muted)">${linkCount}/3 shops</span></td>
+      <td>${p.featured ? '<span class="featured-star" title="Featured">⭐ Yes</span>' : '<span style="color:var(--muted);font-size:.8rem">—</span>'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-blue btn-sm" onclick="editProduct('${p.id}')">✏ Edit</button>
+        <button class="btn btn-red btn-sm" style="margin-left:.4rem" onclick="confirmDeleteProduct('${p.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterProductTable(q) {
+  const cat = document.getElementById('productCatFilter').value;
+  let list = DATA.products;
+  if (cat) list = list.filter(p=>p.category===cat);
+  if (q.trim()) list = list.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.description?.toLowerCase().includes(q.toLowerCase()));
+  renderProductTable(list);
+}
+
+function populateCatSelects() {
+  const opts = DATA.categories.map(c=>`<option value="${c.slug}">${c.emoji} ${c.label}</option>`).join('');
+  document.getElementById('f-cat').innerHTML = opts || '<option value="">No categories yet</option>';
+  const filter = document.getElementById('productCatFilter');
+  filter.innerHTML = '<option value="">All Categories</option>' + opts;
+}
+
+/* ══════════════════════════
+   CATEGORY TABLE
+══════════════════════════ */
+function renderCatTable() {
+  const tbody = document.getElementById('catTableBody');
+  if (DATA.categories.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">🗂</div><p>No categories yet.</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = DATA.categories.map(c => {
+    const count = DATA.products.filter(p=>p.category===c.slug).length;
+    return `<tr>
+      <td style="font-size:1.5rem">${c.emoji}</td>
+      <td style="font-weight:500">${c.label}</td>
+      <td><code style="font-size:.78rem;background:var(--sage-50);padding:2px 8px;border-radius:4px">${c.slug}</code></td>
+      <td style="font-size:.82rem;color:var(--muted)">${c.description||'—'}</td>
+      <td><span class="badge">${count}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-blue btn-sm" onclick="editCategory('${c.id}')">✏ Edit</button>
+        <button class="btn btn-red btn-sm" style="margin-left:.4rem" onclick="confirmDeleteCat('${c.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ══════════════════════════
+   PRODUCT MODAL
+══════════════════════════ */
+function openProductModal(id) {
+  editingProductId = id || null;
+  document.getElementById('productModalTitle').textContent = id ? 'Edit Product' : 'Add Product';
+  document.getElementById('btnDeleteProduct').style.display = id ? 'flex' : 'none';
+
+  if (id) {
+    const p = DATA.products.find(x=>x.id===id);
+    document.getElementById('f-name').value = p.name||'';
+    document.getElementById('f-cat').value = p.category||'';
+    document.getElementById('f-rating').value = p.rating||'';
+    document.getElementById('f-reviews').value = p.reviews||'';
+    document.getElementById('f-featured').value = p.featured ? 'true' : 'false';
+    document.getElementById('f-image').value = p.image||'';
+    document.getElementById('f-short').value = p.shortDesc||'';
+    document.getElementById('f-desc').value = p.description||'';
+    document.getElementById('f-amazon').value = p.amazonLink||'';
+    document.getElementById('f-tiktok').value = p.tiktokLink||'';
+    document.getElementById('f-shopee').value = p.shopeeLink||'';
+    previewImage(p.image||'');
+    renderHighlights(p.highlights||[]);
+  } else {
+    ['f-name','f-rating','f-reviews','f-image','f-short','f-desc','f-amazon','f-tiktok','f-shopee']
+      .forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-featured').value='false';
+    if(DATA.categories.length) document.getElementById('f-cat').value=DATA.categories[0].slug;
+    previewImage('');
+    renderHighlights(['','','']);
+  }
+  document.getElementById('productModal').classList.add('show');
+}
+
+function closeProductModal() {
+  document.getElementById('productModal').classList.remove('show');
+  editingProductId = null;
+}
+
+function editProduct(id) {
+  openProductModal(id);
+  if (document.getElementById('panel-products').classList.contains('active') === false) {
+    switchPanel('products', document.querySelector('[data-panel="products"]'));
+  }
+}
+
+function saveProduct() {
+  const name = document.getElementById('f-name').value.trim();
+  const cat = document.getElementById('f-cat').value;
+  const shortDesc = document.getElementById('f-short').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
+  if (!name || !cat || !shortDesc || !desc) {
+    showToast('Please fill in Name, Category, Short & Full Description', 'error');
+    return;
+  }
+
+  const featured = document.getElementById('f-featured').value === 'true';
+  if (featured) DATA.products.forEach(p=>p.featured=false);
+
+  const data = {
+    id: editingProductId || 'prod_' + Date.now(),
+    name,
+    category: cat,
+    image: document.getElementById('f-image').value.trim(),
+    shortDesc,
+    description: desc,
+    highlights: getHighlights(),
+    rating: parseFloat(document.getElementById('f-rating').value)||4.5,
+    reviews: parseInt(document.getElementById('f-reviews').value)||0,
+    amazonLink: document.getElementById('f-amazon').value.trim(),
+    tiktokLink: document.getElementById('f-tiktok').value.trim(),
+    shopeeLink: document.getElementById('f-shopee').value.trim(),
+    featured,
+    date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+  };
+
+  if (editingProductId) {
+    const idx = DATA.products.findIndex(p=>p.id===editingProductId);
+    DATA.products[idx] = data;
+  } else {
+    DATA.products.unshift(data);
+  }
+
+  saveData();
+  closeProductModal();
+  renderProductTable();
+  renderDashboard();
+}
+
+function confirmDeleteProduct(id) {
+  if (confirm('Delete this product? This cannot be undone.')) {
+    DATA.products = DATA.products.filter(p=>p.id!==id);
+    saveData();
+    renderProductTable();
+    renderDashboard();
+  }
+}
+
+function deleteProduct() {
+  if (editingProductId) { confirmDeleteProduct(editingProductId); closeProductModal(); }
+}
+
+/* ══════════════════════════
+   CATEGORY MODAL
+══════════════════════════ */
+function openCatModal(id) {
+  editingCatId = id || null;
+  document.getElementById('catModalTitle').textContent = id ? 'Edit Category' : 'Add Category';
+  document.getElementById('btnDeleteCat').style.display = id ? 'flex' : 'none';
+
+  if (id) {
+    const c = DATA.categories.find(x=>x.id===id);
+    document.getElementById('fc-emoji').value = c.emoji||'';
+    document.getElementById('fc-label').value = c.label||'';
+    document.getElementById('fc-slug').value = c.slug||'';
+    document.getElementById('fc-desc').value = c.description||'';
+  } else {
+    ['fc-emoji','fc-label','fc-slug','fc-desc'].forEach(i=>document.getElementById(i).value='');
+  }
+  document.getElementById('catModal').classList.add('show');
+
+  // Auto-fill slug from label
+  document.getElementById('fc-label').oninput = function() {
+    if (!editingCatId) {
+      document.getElementById('fc-slug').value = this.value.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+    }
+  };
+}
+
+function closeCatModal() {
+  document.getElementById('catModal').classList.remove('show');
+  editingCatId = null;
+}
+
+function editCategory(id) { openCatModal(id); }
+
+function saveCategory() {
+  const emoji = document.getElementById('fc-emoji').value.trim();
+  const label = document.getElementById('fc-label').value.trim();
+  const slug = document.getElementById('fc-slug').value.trim();
+  if (!emoji || !label || !slug) {
+    showToast('Please fill in Emoji, Label, and Slug', 'error');
+    return;
+  }
+  // check slug uniqueness
+  const dup = DATA.categories.find(c=>c.slug===slug && c.id!==editingCatId);
+  if (dup) { showToast('Slug already exists — choose a different one', 'error'); return; }
+
+  const data = {
+    id: editingCatId || 'cat_' + Date.now(),
+    emoji, label, slug,
+    description: document.getElementById('fc-desc').value.trim(),
+  };
+
+  if (editingCatId) {
+    const idx = DATA.categories.findIndex(c=>c.id===editingCatId);
+    DATA.categories[idx] = data;
+  } else {
+    DATA.categories.push(data);
+  }
+
+  saveData();
+  closeCatModal();
+  renderCatTable();
+  renderDashboard();
+  populateCatSelects();
+}
+
+function confirmDeleteCat(id) {
+  const cat = DATA.categories.find(c=>c.id===id);
+  const count = DATA.products.filter(p=>p.category===cat?.slug).length;
+  const msg = count > 0
+    ? `Delete "${cat.label}"? It has ${count} product(s) assigned to it. Those products won't be deleted but will lose their category.`
+    : `Delete "${cat?.label}"? This cannot be undone.`;
+  if (confirm(msg)) {
+    DATA.categories = DATA.categories.filter(c=>c.id!==id);
+    saveData();
+    renderCatTable();
+    renderDashboard();
+    populateCatSelects();
+  }
+}
+
+function deleteCategory() {
+  if (editingCatId) { confirmDeleteCat(editingCatId); closeCatModal(); }
+}
+
+/* ══════════════════════════
+   HIGHLIGHTS
+══════════════════════════ */
+function renderHighlights(arr) {
+  const editor = document.getElementById('highlightsEditor');
+  editor.innerHTML = arr.map(h => `
+    <div class="highlight-row">
+      <input class="form-input" type="text" value="${h||''}" placeholder="e.g. Waterproof design"/>
+      <button class="btn-icon-sm" onclick="removeHighlight(this)" title="Remove">✕</button>
+    </div>`).join('');
+}
+function addHighlight() {
+  const editor = document.getElementById('highlightsEditor');
+  const row = document.createElement('div');
+  row.className = 'highlight-row';
+  row.innerHTML = `<input class="form-input" type="text" placeholder="e.g. Waterproof design"/><button class="btn-icon-sm" onclick="removeHighlight(this)" title="Remove">✕</button>`;
+  editor.appendChild(row);
+}
+function removeHighlight(btn) { btn.parentElement.remove(); }
+function getHighlights() {
+  return [...document.querySelectorAll('#highlightsEditor input')]
+    .map(i=>i.value.trim()).filter(Boolean);
+}
+
+/* ══════════════════════════
+   IMAGE PREVIEW
+══════════════════════════ */
+function previewImage(url) {
+  const el = document.getElementById('imgPreview');
+  el.innerHTML = url
+    ? `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<div class=\\'img-preview-placeholder\\'>❌</div>'"/>`
+    : `<div class="img-preview-placeholder">🖼</div>`;
+}
+
+/* ══════════════════════════
+   NAVIGATION
+══════════════════════════ */
+function switchPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  const navItem = el || document.querySelector(`[data-panel="${name}"]`);
+  if (navItem) navItem.classList.add('active');
+  const titles = {dashboard:'Dashboard',products:'Products',categories:'Categories'};
+  document.getElementById('topBarTitle').textContent = titles[name]||name;
+}
+
+function openExternal(url) { window.open(url, '_blank'); }
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+/* ══════════════════════════
+   TOAST
+══════════════════════════ */
+function showToast(msg, type='', duration=3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type?' toast-'+type:'') + ' show';
+  setTimeout(()=>t.classList.remove('show'), duration);
+}
+
+/* ══════════════════════════
+   CLOSE MODALS ON OVERLAY CLICK
+══════════════════════════ */
+document.getElementById('productModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeProductModal();
+});
+document.getElementById('catModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeCatModal();
+});
+
+/* ══════════════════════════
+   BOOT
+══════════════════════════ */
+if (checkAuth()) init();
+</script>
+</body>
+</html>

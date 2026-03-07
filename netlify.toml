@@ -1,0 +1,16 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+
+# Protect admin page - optional basic redirect rule
+# You can add Netlify Identity for stronger auth later
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200

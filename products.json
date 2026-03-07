@@ -1,0 +1,76 @@
+{
+  "categories": [
+    { "id": "cat1", "slug": "home", "label": "Home", "emoji": "🏠", "description": "Home decor, organization, and living essentials" },
+    { "id": "cat2", "slug": "beauty", "label": "Beauty", "emoji": "💄", "description": "Skincare, makeup, and personal care" },
+    { "id": "cat3", "slug": "fitness", "label": "Fitness", "emoji": "💪", "description": "Workout gear, supplements, and wellness" },
+    { "id": "cat4", "slug": "gadgets", "label": "Gadgets", "emoji": "📱", "description": "Tech, electronics, and smart devices" },
+    { "id": "cat5", "slug": "fashion", "label": "Fashion", "emoji": "👗", "description": "Clothing, accessories, and footwear" },
+    { "id": "cat6", "slug": "food", "label": "Food & Kitchen", "emoji": "🍳", "description": "Cooking tools, ingredients, and kitchen gadgets" }
+  ],
+  "products": [
+    {
+      "id": "prod1",
+      "name": "Wireless Earbuds Pro",
+      "category": "gadgets",
+      "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&q=80",
+      "description": "After testing 14 pairs of budget earbuds, these are the ones that consistently impressed us. Balanced audio, comfortable fit, and battery life that outlasts the competition. Whether commuting, working out, or on calls — these just work.",
+      "shortDesc": "We tested 14 budget earbuds so you don't have to. Crystal-clear audio and long battery that survives the commute.",
+      "highlights": ["Up to 32 hours total battery with case", "IPX5 water resistance — sweat & rain proof", "Active Noise Cancellation", "Compatible with Android & iOS"],
+      "rating": 4.4,
+      "reviews": 2847,
+      "amazonLink": "https://amazon.com",
+      "tiktokLink": "https://tiktok.com",
+      "shopeeLink": "https://shopee.ph",
+      "featured": true,
+      "date": "Mar 5, 2026"
+    },
+    {
+      "id": "prod2",
+      "name": "Niacinamide 10% Serum",
+      "category": "beauty",
+      "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&q=80",
+      "description": "This serum took over our feeds for a reason. Niacinamide at 10% visibly reduces pores, controls oil, and brightens skin within weeks. We tested it for 30 days and the difference was real — not just filter magic.",
+      "shortDesc": "TikTok made us buy it — but does it actually work? We tested it for 30 days straight.",
+      "highlights": ["Minimizes pores and controls oil", "Fades dark spots and evens tone", "Lightweight, non-greasy formula", "No fragrance or parabens"],
+      "rating": 4.8,
+      "reviews": 5610,
+      "amazonLink": "https://amazon.com",
+      "tiktokLink": "https://tiktok.com",
+      "shopeeLink": "https://shopee.ph",
+      "featured": false,
+      "date": "Mar 3, 2026"
+    },
+    {
+      "id": "prod3",
+      "name": "Stackable Storage Set",
+      "category": "home",
+      "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+      "description": "These modular storage boxes transformed our cluttered shelves into something magazine-worthy. The frosted finish looks clean in any room, and the stackable design means you can start small and keep adding.",
+      "shortDesc": "These modular boxes transformed our cluttered shelves into something magazine-worthy on a budget.",
+      "highlights": ["Modular stackable design", "Frosted finish looks premium", "Holds up to 5kg per box", "Easy to clean"],
+      "rating": 4.6,
+      "reviews": 3290,
+      "amazonLink": "https://amazon.com",
+      "tiktokLink": "https://tiktok.com",
+      "shopeeLink": "https://shopee.ph",
+      "featured": false,
+      "date": "Feb 27, 2026"
+    },
+    {
+      "id": "prod4",
+      "name": "Resistance Bands Set",
+      "category": "fitness",
+      "image": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80",
+      "description": "This set replaced half our gym equipment. Five resistance levels from beginner to advanced. Compact enough for a drawer, versatile enough for full-body workouts, physical therapy, and everything in between.",
+      "shortDesc": "Five resistance levels, handles, ankle straps — everything you need for a full home workout.",
+      "highlights": ["5 resistance levels (5–50 lbs)", "Includes handles, ankle straps & door anchor", "Natural latex — no snapping", "Compact, travel-friendly"],
+      "rating": 4.5,
+      "reviews": 1980,
+      "amazonLink": "https://amazon.com",
+      "tiktokLink": "https://tiktok.com",
+      "shopeeLink": "https://shopee.ph",
+      "featured": false,
+      "date": "Feb 20, 2026"
+    }
+  ]
+}

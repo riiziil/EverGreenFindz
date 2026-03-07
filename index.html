@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EverGreenFindz</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#ffffff;
+  --off-white:#f8faf8;
+  --sage-50:#f2f6f2;
+  --sage-100:#e2ece2;
+  --sage-200:#c4d9c4;
+  --sage-300:#96bc96;
+  --sage-400:#6a9f6a;
+  --sage-500:#4a8050;
+  --sage-600:#3a6640;
+  --black:#0f0f0f;
+  --ink:#1c1c1c;
+  --muted:#6a7a6a;
+  --border:#dce8dc;
+  --surface:#ffffff;
+  --fd:'Cormorant Garamond',Georgia,serif;
+  --fb:'Jost',sans-serif;
+  --r:10px;
+  --sh:0 2px 20px rgba(0,0,0,.06);
+  --sh-md:0 6px 32px rgba(0,0,0,.10);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--off-white);color:var(--ink);font-size:16px;line-height:1.6}
+a{color:inherit;text-decoration:none}
+img{display:block;width:100%;object-fit:cover}
+button,input,select,textarea{font-family:var(--fb)}
+.page{display:none}.page.active{display:block}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,.95);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  padding:0 clamp(1.2rem,5vw,3rem);height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{
+  font-family:var(--fd);font-size:1.5rem;font-weight:600;
+  letter-spacing:.02em;cursor:pointer;color:var(--black);
+  display:flex;align-items:center;gap:8px;
+}
+.nav-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--sage-500)}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
+.nav-links a{font-size:.82rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:color .2s;cursor:pointer}
+.nav-links a:hover{color:var(--sage-600)}
+.hamburger{display:none;cursor:pointer;flex-direction:column;gap:5px}
+.hamburger span{display:block;width:22px;height:1.5px;background:var(--black);border-radius:2px;transition:.3s}
+
+/* ── HERO ── */
+.hero{
+  max-width:860px;margin:0 auto;
+  padding:clamp(4rem,10vw,7rem) clamp(1.2rem,5vw,2rem) clamp(2.5rem,5vw,4rem);
+  text-align:center;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--sage-600);font-size:.72rem;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.5rem;
+}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';display:block;width:24px;height:1px;background:var(--sage-400)}
+.hero h1{
+  font-family:var(--fd);font-size:clamp(2.8rem,7vw,5rem);
+  font-weight:600;line-height:1.1;letter-spacing:-.01em;
+  color:var(--black);margin-bottom:1.2rem;
+}
+.hero h1 em{font-style:italic;color:var(--sage-500)}
+.hero p{
+  font-size:1rem;color:var(--muted);
+  max-width:480px;margin:0 auto 2.5rem;
+  font-weight:300;line-height:1.8;
+}
+.hero-search{
+  display:flex;max-width:480px;margin:0 auto;
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:99px;overflow:hidden;
+  box-shadow:var(--sh);transition:border-color .2s,box-shadow .2s;
+}
+.hero-search:focus-within{border-color:var(--sage-400);box-shadow:0 0 0 3px rgba(74,128,80,.1)}
+.hero-search input{flex:1;border:none;outline:none;padding:.75rem 1.4rem;font-size:.9rem;background:transparent;color:var(--ink);letter-spacing:.01em}
+.hero-search input::placeholder{color:#b0bdb0}
+.hero-search button{background:var(--sage-500);color:#fff;border:none;padding:0 1.5rem;cursor:pointer;font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;transition:background .2s}
+.hero-search button:hover{background:var(--sage-600)}
+
+/* ── CATEGORY BAR ── */
+.category-bar{
+  display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;
+  padding:0 clamp(1rem,5vw,2rem) 3rem;
+}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1.5px solid var(--border);background:var(--white);
+  border-radius:99px;padding:7px 18px;
+  font-size:.78rem;font-weight:500;letter-spacing:.04em;
+  cursor:pointer;transition:all .2s;color:var(--muted);
+}
+.pill:hover{border-color:var(--sage-300);color:var(--sage-600);background:var(--sage-50)}
+.pill.active{background:var(--sage-500);color:#fff;border-color:var(--sage-500)}
+
+/* ── MAIN LAYOUT ── */
+.main-wrap{
+  max-width:1200px;margin:0 auto;
+  padding:0 clamp(1.2rem,5vw,2.5rem) 6rem;
+  display:grid;grid-template-columns:1fr 300px;gap:3rem;
+}
+.section-header{
+  display:flex;align-items:baseline;justify-content:space-between;
+  margin-bottom:1.5rem;padding-bottom:.75rem;
+  border-bottom:1px solid var(--border);
+}
+.section-title{font-family:var(--fd);font-size:1.5rem;font-weight:600;letter-spacing:.01em;color:var(--black)}
+.section-link{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--sage-500);cursor:pointer}
+.section-link:hover{color:var(--sage-600)}
+
+/* ── FEATURED ── */
+.featured-post{
+  border-radius:var(--r);overflow:hidden;background:var(--white);
+  box-shadow:var(--sh);margin-bottom:2.5rem;
+  display:grid;grid-template-columns:1.1fr 1fr;
+  transition:transform .28s,box-shadow .28s;cursor:pointer;
+  border:1px solid var(--border);
+}
+.featured-post:hover{transform:translateY(-4px);box-shadow:var(--sh-md)}
+.featured-post-img{
+  position:relative;overflow:hidden;min-height:300px;
+  background:var(--sage-100);
+}
+.featured-post-img img{height:100%;min-height:300px;object-fit:cover;transition:transform .4s}
+.featured-post:hover .featured-post-img img{transform:scale(1.04)}
+.featured-badge{
+  position:absolute;top:14px;left:14px;
+  background:var(--sage-500);color:#fff;
+  font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 12px;border-radius:99px;
+}
+.featured-body{padding:2.2rem 2rem;display:flex;flex-direction:column;justify-content:center}
+.featured-cat{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--sage-600);margin-bottom:.8rem;
+}
+.featured-body h2{
+  font-family:var(--fd);font-size:1.6rem;font-weight:600;
+  line-height:1.25;color:var(--black);margin-bottom:.8rem;
+}
+.featured-body p{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:1.4rem}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--black);color:#fff;border-radius:99px;
+  padding:.55rem 1.3rem;font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  align-self:flex-start;transition:background .2s;cursor:pointer;border:none;
+}
+.btn-primary:hover{background:var(--sage-600)}
+.btn-primary svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.5;transition:transform .2s}
+.btn-primary:hover svg{transform:translateX(3px)}
+
+/* ── POST GRID ── */
+.post-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+.post-card{
+  background:var(--white);border-radius:var(--r);overflow:hidden;
+  box-shadow:var(--sh);cursor:pointer;
+  transition:transform .25s,box-shadow .25s;
+  border:1px solid var(--border);
+}
+.post-card:hover{transform:translateY(-4px);box-shadow:var(--sh-md)}
+.post-card.hidden{display:none}
+.card-img{height:180px;overflow:hidden;background:var(--sage-100);position:relative}
+.card-img img{height:100%;object-fit:cover;transition:transform .4s}
+.post-card:hover .card-img img{transform:scale(1.05)}
+.card-img-placeholder{height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--sage-50)}
+.card-body{padding:1.1rem 1.2rem 1.3rem}
+.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:.6rem}
+.cat-badge{
+  font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  padding:3px 10px;border-radius:99px;
+  background:var(--sage-100);color:var(--sage-600);
+}
+.card-date{font-size:.72rem;color:#a0aea0}
+.card-body h3{
+  font-family:var(--fd);font-size:1.05rem;font-weight:600;
+  line-height:1.3;color:var(--black);margin-bottom:.45rem;
+}
+.card-body p{font-size:.82rem;color:var(--muted);line-height:1.65}
+.card-footer{
+  padding:.65rem 1.2rem;border-top:1px solid var(--sage-50);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-read{font-size:.75rem;font-weight:600;letter-spacing:.04em;color:var(--sage-500);text-transform:uppercase}
+.card-read:hover{color:var(--sage-700)}
+.card-rating{font-size:.75rem;color:#b0b8a0;display:flex;align-items:center;gap:4px}
+.star-fill{color:#8ab88a}
+.no-results{
+  grid-column:1/-1;text-align:center;padding:4rem 1rem;
+  color:var(--muted);
+}
+.no-results-icon{font-size:2.5rem;margin-bottom:.75rem}
+
+/* ── SIDEBAR ── */
+.sidebar{display:flex;flex-direction:column;gap:2rem}
+.sidebar-widget{background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.widget-head{
+  padding:1rem 1.3rem;border-bottom:1px solid var(--border);
+  font-family:var(--fd);font-size:1.1rem;font-weight:600;color:var(--black);
+  letter-spacing:.01em;
+}
+.newsletter-body{padding:1.3rem}
+.newsletter-body p{font-size:.83rem;color:var(--muted);margin-bottom:1rem;line-height:1.6}
+.newsletter-body input{
+  width:100%;border:1.5px solid var(--border);border-radius:8px;
+  padding:.6rem 1rem;font-size:.85rem;outline:none;
+  margin-bottom:.65rem;color:var(--ink);background:var(--off-white);
+  transition:border-color .2s;
+}
+.newsletter-body input:focus{border-color:var(--sage-400);background:#fff}
+.newsletter-body button{
+  width:100%;background:var(--sage-500);color:#fff;border:none;
+  border-radius:8px;padding:.65rem;font-size:.8rem;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background .2s;
+}
+.newsletter-body button:hover{background:var(--sage-600)}
+.tag-cloud{padding:1rem 1.3rem;display:flex;flex-wrap:wrap;gap:6px}
+.tag-item{
+  background:var(--sage-50);border:1px solid var(--sage-100);
+  border-radius:99px;padding:5px 13px;font-size:.75rem;
+  color:var(--sage-600);cursor:pointer;transition:all .15s;font-weight:500;
+}
+.tag-item:hover{background:var(--sage-500);color:#fff;border-color:var(--sage-500)}
+
+/* ── DISCLOSURE / FOOTER ── */
+.disclosure{max-width:1200px;margin:0 auto;padding:0 clamp(1.2rem,5vw,2.5rem) 2rem}
+.disclosure-box{
+  background:var(--sage-50);border-left:3px solid var(--sage-400);
+  border-radius:0 8px 8px 0;padding:1rem 1.3rem;
+  font-size:.8rem;color:var(--muted);line-height:1.6;
+}
+.disclosure-box strong{color:var(--sage-600)}
+footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.2rem,5vw,3rem) 2.5rem}
+.footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-logo{font-family:var(--fd);font-size:1.4rem;color:#fff;margin-bottom:.75rem;letter-spacing:.02em}
+.footer-logo span{color:var(--sage-400)}
+.footer-brand p{font-size:.82rem;line-height:1.8}
+.footer-col h4{color:rgba(255,255,255,.75);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.1rem;font-weight:600}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.footer-col ul li a{font-size:.82rem;color:rgba(255,255,255,.38);transition:color .2s;cursor:pointer}
+.footer-col ul li a:hover{color:var(--sage-300)}
+.footer-bottom{max-width:1200px;margin:0 auto;border-top:1px solid rgba(255,255,255,.08);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;font-size:.76rem}
+
+/* ══ PRODUCT PAGE ══ */
+#page-product{animation:fadeUp .4s ease both}
+.product-breadcrumb{
+  max-width:1200px;margin:0 auto;
+  padding:1.8rem clamp(1.2rem,5vw,2.5rem) 0;
+  font-size:.78rem;color:var(--muted);
+  display:flex;align-items:center;gap:6px;font-weight:500;letter-spacing:.02em;
+}
+.crumb{cursor:pointer;transition:color .2s}.crumb:hover{color:var(--sage-600)}
+.sep{color:var(--border)}
+.product-layout{
+  max-width:1200px;margin:0 auto;
+  padding:2rem clamp(1.2rem,5vw,2.5rem) 5rem;
+  display:grid;grid-template-columns:1fr 1.05fr;gap:4rem;align-items:start;
+}
+.product-gallery{display:flex;flex-direction:column;gap:1rem}
+.product-main-img{
+  border-radius:14px;overflow:hidden;
+  border:1px solid var(--border);background:var(--sage-50);
+  aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
+}
+.product-main-img img{width:100%;height:100%;object-fit:cover;border-radius:14px}
+.product-main-img-placeholder{font-size:5rem}
+.product-info{display:flex;flex-direction:column;gap:1.3rem}
+.product-cat-pill{
+  display:inline-flex;align-items:center;gap:6px;width:fit-content;
+  padding:5px 14px;border-radius:99px;
+  font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--sage-100);color:var(--sage-600);
+}
+.product-title{
+  font-family:var(--fd);font-size:clamp(1.8rem,3.5vw,2.6rem);
+  font-weight:600;line-height:1.15;letter-spacing:-.01em;color:var(--black);
+}
+.product-rating-row{display:flex;align-items:center;gap:12px}
+.stars-display{color:var(--sage-500);font-size:1.1rem;letter-spacing:2px}
+.rating-text{font-size:.85rem;color:var(--muted)}
+.divider{border:none;border-top:1px solid var(--border)}
+.product-desc{font-size:.92rem;color:var(--muted);line-height:1.8}
+.highlights-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.highlights-list li{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:.88rem;color:var(--ink);
+}
+.highlights-list li::before{
+  content:'';display:block;width:16px;height:16px;border-radius:50%;
+  background:var(--sage-500);flex-shrink:0;margin-top:3px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8l3.5 3.5L13 5' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Buy buttons */
+.buy-section{display:flex;flex-direction:column;gap:.75rem}
+.buy-heading{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.1rem}
+.shop-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.3rem;border-radius:10px;
+  border:1.5px solid transparent;transition:all .22s;text-decoration:none;
+}
+.shop-btn:hover{transform:translateX(3px)}
+.shop-btn-left{display:flex;align-items:center;gap:12px}
+.shop-btn-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.shop-btn-text{display:flex;flex-direction:column}
+.shop-btn-name{font-weight:600;font-size:.9rem;line-height:1}
+.shop-btn-sub{font-size:.72rem;opacity:.6;margin-top:3px}
+.shop-btn-arrow{font-size:.9rem;opacity:.5;transition:opacity .2s}
+.shop-btn:hover .shop-btn-arrow{opacity:1}
+.btn-amazon{background:#fffbf0;border-color:#f0d080;color:#7a5000}
+.btn-amazon .shop-btn-icon{background:#fff3cc}
+.btn-amazon:hover{background:#ff9900;border-color:#ff9900;color:#fff}
+.btn-amazon:hover .shop-btn-icon{background:rgba(255,255,255,.2)}
+.btn-tiktok{background:#f7f7f7;border-color:#e0e0e0;color:var(--ink)}
+.btn-tiktok .shop-btn-icon{background:#ebebeb}
+.btn-tiktok:hover{background:var(--black);border-color:var(--black);color:#fff}
+.btn-tiktok:hover .shop-btn-icon{background:rgba(255,255,255,.15)}
+.btn-shopee{background:#fff3f1;border-color:#f8c0b0;color:#8a2010}
+.btn-shopee .shop-btn-icon{background:#ffe0d8}
+.btn-shopee:hover{background:#ee4d2d;border-color:#ee4d2d;color:#fff}
+.btn-shopee:hover .shop-btn-icon{background:rgba(255,255,255,.2)}
+.shop-btn.hidden{display:none}
+.product-note{
+  background:var(--sage-50);border-left:3px solid var(--sage-400);
+  border-radius:0 8px 8px 0;padding:.8rem 1.1rem;
+  font-size:.78rem;color:var(--muted);line-height:1.6;
+}
+.product-note strong{color:var(--sage-600)}
+.related-section{max-width:1200px;margin:0 auto;padding:0 clamp(1.2rem,5vw,2.5rem) 5rem}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:1.5rem}
+
+/* animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{animation:fadeUp .7s ease both}
+.category-bar{animation:fadeUp .7s .1s ease both}
+.featured-post{animation:fadeUp .6s .18s ease both}
+.post-card{animation:fadeUp .5s ease both}
+.post-card:nth-child(2){animation-delay:.06s}
+.post-card:nth-child(3){animation-delay:.12s}
+.post-card:nth-child(4){animation-delay:.18s}
+
+/* loading */
+.loading-overlay{
+  display:none;position:fixed;inset:0;background:rgba(255,255,255,.85);
+  z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:1rem;
+}
+.loading-overlay.show{display:flex}
+.spinner{width:36px;height:36px;border:3px solid var(--sage-100);border-top-color:var(--sage-500);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:.85rem;color:var(--muted);font-weight:500;letter-spacing:.04em}
+
+/* toast */
+.toast{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--black);color:#fff;padding:.7rem 1.5rem;border-radius:99px;
+  font-size:.82rem;font-weight:500;z-index:9999;transition:transform .3s;pointer-events:none;
+  white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* responsive */
+@media(max-width:960px){
+  .main-wrap{grid-template-columns:1fr}
+  .sidebar{display:grid;grid-template-columns:1fr 1fr}
+  .product-layout{grid-template-columns:1fr;gap:2rem}
+  .related-grid{grid-template-columns:1fr 1fr}
+  .footer-inner{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .nav-links{display:none}
+  .nav-links.open{
+    display:flex;flex-direction:column;position:absolute;
+    top:64px;left:0;right:0;
+    background:rgba(255,255,255,.98);border-bottom:1px solid var(--border);
+    padding:1.2rem 1.5rem;gap:1.2rem;backdrop-filter:blur(14px);
+  }
+  .hamburger{display:flex}
+  .featured-post{grid-template-columns:1fr}
+  .featured-post-img{min-height:220px}
+  .post-grid{grid-template-columns:1fr}
+  .sidebar{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;gap:.5rem;text-align:center}
+  .related-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading picks…</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="goHome()">
+    <div class="nav-logo-dot"></div>
+    EverGreenFindz
+  </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a onclick="goHome()">Home</a></li>
+    <li><a onclick="goHome()">Reviews</a></li>
+    <li><a onclick="goHome()">Deals</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="hero-eyebrow">Curated Affiliate Picks</div>
+    <h1>Find things worth <em>buying</em>,<br>not just browsing.</h1>
+    <p>Honest reviews and curated finds — shop across Amazon, TikTok Shop, and Shopee all in one place.</p>
+    <div class="hero-search">
+      <input type="text" id="searchInput" placeholder="Search products, reviews, categories…" oninput="handleSearch(this.value)"/>
+      <button>Search</button>
+    </div>
+  </section>
+
+  <div class="category-bar" id="categoryBar">
+    <div class="pill active" data-cat="all" onclick="filterCat('all',this)">🛍 All</div>
+  </div>
+
+  <div class="main-wrap">
+    <main>
+      <div id="featuredSection"></div>
+      <div class="section-header" id="latestHeader" style="display:none">
+        <span class="section-title">Latest Posts</span>
+        <span class="section-link">View all →</span>
+      </div>
+      <div class="post-grid" id="postGrid">
+        <div class="no-results" id="noResults" style="display:none">
+          <div class="no-results-icon">🌿</div>
+          <p>No posts found. Try a different category.</p>
+        </div>
+      </div>
+    </main>
+    <aside class="sidebar">
+      <div class="sidebar-widget">
+        <div class="widget-head">Weekly Picks</div>
+        <div class="newsletter-body">
+          <p>Get our top 5 finds every week — straight to your inbox. No spam, just good deals.</p>
+          <input type="email" placeholder="your@email.com"/>
+          <button>Subscribe Free</button>
+        </div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="widget-head">Browse Topics</div>
+        <div class="tag-cloud" id="tagCloud"></div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="disclosure">
+    <div class="disclosure-box">
+      <strong>Affiliate Disclosure:</strong> Some links on this site are affiliate links. If you click and make a purchase, we may earn a small commission at no extra cost to you. We only recommend products we've genuinely researched or tested.
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">Pick<span>Wise</span></div>
+        <p>Curated product reviews and honest recommendations across Amazon, TikTok Shop, and Shopee — all in one place.</p>
+      </div>
+      <div class="footer-col"><h4>Browse</h4><ul id="footerCats"></ul></div>
+      <div class="footer-col"><h4>Explore</h4><ul><li><a>Gift Guides</a></li><li><a>Weekly Deals</a></li><li><a>Viral Finds</a></li></ul></div>
+      <div class="footer-col"><h4>Info</h4><ul><li><a>About</a></li><li><a>Contact</a></li><li><a>Privacy Policy</a></li><li><a>Disclosure</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 EverGreenFindz. All rights reserved.</span>
+      <span>Built with care for smart shoppers.</span>
+    </div>
+  </footer>
+</div>
+
+<!-- PRODUCT PAGE -->
+<div id="page-product" class="page">
+  <div class="product-breadcrumb">
+    <span class="crumb" onclick="goHome()">Home</span>
+    <span class="sep">›</span>
+    <span class="crumb" id="breadCat" onclick="goHome()"></span>
+    <span class="sep">›</span>
+    <span id="breadTitle" style="color:var(--black)"></span>
+  </div>
+  <div class="product-layout">
+    <div class="product-gallery">
+      <div class="product-main-img" id="productMainImg"></div>
+    </div>
+    <div class="product-info">
+      <span class="product-cat-pill" id="productCat"></span>
+      <h1 class="product-title" id="productTitle"></h1>
+      <div class="product-rating-row">
+        <span class="stars-display" id="productStars"></span>
+        <span class="rating-text" id="productRating"></span>
+      </div>
+      <hr class="divider"/>
+      <p class="product-desc" id="productDesc"></p>
+      <ul class="highlights-list" id="productHighlights"></ul>
+      <hr class="divider"/>
+      <div class="buy-section">
+        <div class="buy-heading">Where to buy</div>
+        <a class="shop-btn btn-amazon" id="btnAmazon" href="#" target="_blank" rel="noopener">
+          <div class="shop-btn-left"><div class="shop-btn-icon">📦</div><div class="shop-btn-text"><span class="shop-btn-name">Buy on Amazon</span><span class="shop-btn-sub">Fast shipping &amp; easy returns</span></div></div>
+          <span class="shop-btn-arrow">→</span>
+        </a>
+        <a class="shop-btn btn-tiktok" id="btnTiktok" href="#" target="_blank" rel="noopener">
+          <div class="shop-btn-left"><div class="shop-btn-icon">🎵</div><div class="shop-btn-text"><span class="shop-btn-name">Buy on TikTok Shop</span><span class="shop-btn-sub">Watch reviews &amp; buy in-app</span></div></div>
+          <span class="shop-btn-arrow">→</span>
+        </a>
+        <a class="shop-btn btn-shopee" id="btnShopee" href="#" target="_blank" rel="noopener">
+          <div class="shop-btn-left"><div class="shop-btn-icon">🛒</div><div class="shop-btn-text"><span class="shop-btn-name">Buy on Shopee</span><span class="shop-btn-sub">Great deals &amp; local sellers</span></div></div>
+          <span class="shop-btn-arrow">→</span>
+        </a>
+      </div>
+      <div class="product-note"><strong>Price tip:</strong> Prices vary by platform. Compare before you buy.</div>
+    </div>
+  </div>
+  <div class="related-section">
+    <div class="section-header">
+      <span class="section-title">You Might Also Like</span>
+      <span class="section-link" onclick="goHome()">See all →</span>
+    </div>
+    <div class="related-grid" id="relatedGrid"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════
+   CONFIG  — update after deploy
+══════════════════════════ */
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? ''   // local dev: relative path
+  : '';  // production: same origin via Netlify Functions
+
+/* ══════════════════════════
+   STATE
+══════════════════════════ */
+let DATA = { categories: [], products: [] };
+let currentCat = 'all';
+
+/* ══════════════════════════
+   FETCH DATA
+══════════════════════════ */
+async function loadData() {
+  showLoading(true);
+  try {
+    const res = await fetch(API_BASE + '/.netlify/functions/get-data');
+    if (!res.ok) throw new Error('Network error');
+    DATA = await res.json();
+  } catch(e) {
+    // Fallback to bundled sample data for preview
+    DATA = SAMPLE_DATA;
+    showToast('Preview mode — connect to Netlify to load live data');
+  }
+  showLoading(false);
+  buildCategoryBar();
+  buildTagCloud();
+  buildFooterCats();
+  renderHome();
+}
+
+/* ══════════════════════════
+   RENDER HOME
+══════════════════════════ */
+function buildCategoryBar() {
+  const bar = document.getElementById('categoryBar');
+  bar.innerHTML = '<div class="pill active" data-cat="all" onclick="filterCat(\'all\',this)">🛍 All</div>';
+  DATA.categories.forEach(c => {
+    bar.innerHTML += `<div class="pill" data-cat="${c.slug}" onclick="filterCat('${c.slug}',this)">${c.emoji} ${c.label}</div>`;
+  });
+}
+
+function buildTagCloud() {
+  document.getElementById('tagCloud').innerHTML =
+    DATA.categories.map(c =>
+      `<span class="tag-item" onclick="filterCatBySlug('${c.slug}')">${c.emoji} ${c.label}</span>`
+    ).join('') + '<span class="tag-item">Gift Ideas</span><span class="tag-item">Under ₱500</span>';
+}
+
+function buildFooterCats() {
+  document.getElementById('footerCats').innerHTML =
+    DATA.categories.slice(0,6).map(c =>
+      `<li><a onclick="filterCatBySlug('${c.slug}')">${c.label}</a></li>`
+    ).join('');
+}
+
+function renderHome(cat) {
+  const c = cat || currentCat;
+  const products = c === 'all' ? DATA.products : DATA.products.filter(p => p.category === c);
+  const featured = products.find(p => p.featured);
+  const grid = products.filter(p => !p.featured);
+
+  // featured
+  const fs = document.getElementById('featuredSection');
+  if (featured) {
+    const catObj = DATA.categories.find(x => x.slug === featured.category) || {};
+    fs.innerHTML = `
+      <div class="section-header"><span class="section-title">Featured</span></div>
+      <article class="featured-post" onclick="openProduct('${featured.id}')">
+        <div class="featured-post-img">
+          <div class="featured-badge">Featured</div>
+          ${featured.image
+            ? `<img src="${featured.image}" alt="${featured.name}" loading="lazy"/>`
+            : `<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;background:var(--sage-100)">${catObj.emoji||'🛍'}</div>`
+          }
+        </div>
+        <div class="featured-body">
+          <div class="featured-cat">${catObj.emoji||''} ${catObj.label||featured.category}</div>
+          <h2>${featured.name}</h2>
+          <p>${featured.shortDesc||featured.description}</p>
+          <button class="btn-primary">
+            Read Review
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </article>`;
+  } else {
+    fs.innerHTML = '';
+  }
+
+  // grid
+  const gridEl = document.getElementById('postGrid');
+  const nr = document.getElementById('noResults');
+  document.getElementById('latestHeader').style.display = grid.length ? 'flex' : 'none';
+
+  if (grid.length === 0) {
+    gridEl.innerHTML = '';
+    gridEl.appendChild(nr);
+    nr.style.display = 'block';
+    return;
+  }
+  nr.style.display = 'none';
+  gridEl.innerHTML = grid.map(p => {
+    const catObj = DATA.categories.find(x => x.slug === p.category) || {};
+    return `
+      <article class="post-card" data-cat="${p.category}" onclick="openProduct('${p.id}')">
+        <div class="card-img">
+          ${p.image
+            ? `<img src="${p.image}" alt="${p.name}" loading="lazy"/>`
+            : `<div class="card-img-placeholder">${catObj.emoji||'🛍'}</div>`
+          }
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="cat-badge">${catObj.emoji||''} ${catObj.label||p.category}</span>
+            <span class="card-date">${p.date||''}</span>
+          </div>
+          <h3>${p.name}</h3>
+          <p>${p.shortDesc||''}</p>
+        </div>
+        <div class="card-footer">
+          <span class="card-read">Read more →</span>
+          <span class="card-rating"><span class="star-fill">★</span> ${p.rating||''}</span>
+        </div>
+      </article>`;
+  }).join('');
+}
+
+/* ══════════════════════════
+   PRODUCT PAGE
+══════════════════════════ */
+function openProduct(id) {
+  const p = DATA.products.find(x => x.id === id);
+  if (!p) return;
+  const catObj = DATA.categories.find(x => x.slug === p.category) || {};
+
+  document.getElementById('breadCat').textContent = catObj.label || p.category;
+  document.getElementById('breadTitle').textContent = p.name;
+
+  const imgEl = document.getElementById('productMainImg');
+  imgEl.innerHTML = p.image
+    ? `<img src="${p.image}" alt="${p.name}"/>`
+    : `<div class="product-main-img-placeholder">${catObj.emoji||'🛍'}</div>`;
+
+  document.getElementById('productCat').textContent = `${catObj.emoji||''} ${catObj.label||p.category}`;
+  document.getElementById('productTitle').textContent = p.name;
+  document.getElementById('productStars').textContent = renderStars(p.rating||4.5);
+  document.getElementById('productRating').textContent = `${p.rating||'N/A'} · ${(p.reviews||0).toLocaleString()} reviews`;
+  document.getElementById('productDesc').textContent = p.description||'';
+  document.getElementById('productHighlights').innerHTML = (p.highlights||[]).map(h=>`<li>${h}</li>`).join('');
+
+  const setBtn = (btnId, url, label) => {
+    const el = document.getElementById(btnId);
+    if (url && url.trim() !== '' && url !== '#') {
+      el.href = url; el.classList.remove('hidden');
+    } else { el.classList.add('hidden'); }
+  };
+  setBtn('btnAmazon', p.amazonLink);
+  setBtn('btnTiktok', p.tiktokLink);
+  setBtn('btnShopee', p.shopeeLink);
+
+  // related
+  const related = DATA.products.filter(r => r.id !== id).slice(0,3);
+  document.getElementById('relatedGrid').innerHTML = related.map(r => {
+    const rc = DATA.categories.find(x => x.slug === r.category)||{};
+    return `
+      <article class="post-card" onclick="openProduct('${r.id}')">
+        <div class="card-img">
+          ${r.image ? `<img src="${r.image}" alt="${r.name}" loading="lazy"/>` : `<div class="card-img-placeholder">${rc.emoji||'🛍'}</div>`}
+        </div>
+        <div class="card-body">
+          <div class="card-meta"><span class="cat-badge">${rc.emoji||''} ${rc.label||r.category}</span></div>
+          <h3>${r.name}</h3>
+        </div>
+        <div class="card-footer">
+          <span class="card-read">View →</span>
+          <span class="card-rating"><span class="star-fill">★</span> ${r.rating||''}</span>
+        </div>
+      </article>`;
+  }).join('');
+
+  showPage('page-product');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══════════════════════════
+   FILTER / SEARCH
+══════════════════════════ */
+function filterCat(cat, el) {
+  document.querySelectorAll('.category-bar .pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  currentCat = cat;
+  document.getElementById('searchInput').value = '';
+  renderHome(cat);
+}
+
+function filterCatBySlug(slug) {
+  goHome();
+  setTimeout(()=>{
+    const pill = document.querySelector(`.category-bar .pill[data-cat="${slug}"]`);
+    if (pill) filterCat(slug, pill);
+  }, 80);
+}
+
+function handleSearch(val) {
+  const q = val.toLowerCase().trim();
+  document.querySelectorAll('.category-bar .pill').forEach((p,i)=>p.classList.toggle('active',i===0));
+  document.querySelectorAll('#postGrid .post-card').forEach(card=>{
+    card.classList.toggle('hidden', q && !card.innerText.toLowerCase().includes(q));
+  });
+  const visible = document.querySelectorAll('#postGrid .post-card:not(.hidden)').length;
+  const nr = document.getElementById('noResults');
+  if(nr) nr.style.display = visible===0&&q?'block':'none';
+}
+
+/* ══════════════════════════
+   HELPERS
+══════════════════════════ */
+function renderStars(r) {
+  const f=Math.floor(r),h=r%1>=.5;
+  return '★'.repeat(f)+(h?'½':'')+'☆'.repeat(5-f-(h?1:0));
+}
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome() {
+  showPage('page-home');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showLoading(v) {
+  document.getElementById('loadingOverlay').classList.toggle('show',v);
+}
+function showToast(msg, duration=3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), duration);
+}
+function toggleMenu() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+/* ══════════════════════════
+   SAMPLE DATA (fallback)
+══════════════════════════ */
+const SAMPLE_DATA = {
+  categories:[
+    {id:'cat1',slug:'home',label:'Home',emoji:'🏠'},
+    {id:'cat2',slug:'beauty',label:'Beauty',emoji:'💄'},
+    {id:'cat3',slug:'fitness',label:'Fitness',emoji:'💪'},
+    {id:'cat4',slug:'gadgets',label:'Gadgets',emoji:'📱'},
+  ],
+  products:[
+    {id:'prod1',name:'Wireless Earbuds Pro',category:'gadgets',image:'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&q=80',description:'After testing 14 pairs, these consistently impressed. Balanced audio, long battery.',shortDesc:'We tested 14 budget earbuds so you don\'t have to.',highlights:['32h battery','IPX5 water resistant','ANC included'],rating:4.4,reviews:2847,amazonLink:'https://amazon.com',tiktokLink:'https://tiktok.com',shopeeLink:'https://shopee.ph',featured:true,date:'Mar 5, 2026'},
+    {id:'prod2',name:'Niacinamide 10% Serum',category:'beauty',image:'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&q=80',description:'This serum visibly reduces pores and controls oil within weeks.',shortDesc:'TikTok made us buy it — does it work? We tested 30 days.',highlights:['Minimizes pores','Fades dark spots','Fragrance-free'],rating:4.8,reviews:5610,amazonLink:'https://amazon.com',tiktokLink:'',shopeeLink:'https://shopee.ph',featured:false,date:'Mar 3, 2026'},
+    {id:'prod3',name:'Stackable Storage Set',category:'home',image:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',description:'Modular storage boxes that transformed our shelves.',shortDesc:'Pinterest-worthy organizers on a budget.',highlights:['Stackable design','Holds 5kg','Easy to clean'],rating:4.6,reviews:3290,amazonLink:'https://amazon.com',tiktokLink:'https://tiktok.com',shopeeLink:'https://shopee.ph',featured:false,date:'Feb 27, 2026'},
+    {id:'prod4',name:'Resistance Bands Set',category:'fitness',image:'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80',description:'Five resistance levels from beginner to advanced.',shortDesc:'Everything you need for a full home workout.',highlights:['5 resistance levels','Includes all accessories','Compact & travel-friendly'],rating:4.5,reviews:1980,amazonLink:'https://amazon.com',tiktokLink:'',shopeeLink:'https://shopee.ph',featured:false,date:'Feb 20, 2026'},
+  ]
+};
+
+/* ══════════════════════════
+   INIT
+══════════════════════════ */
+loadData();
+</script>
+</body>
+</html>
