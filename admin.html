@@ -571,7 +571,7 @@ function doLogin() {
   const u = document.getElementById('loginUser').value.trim();
   const p = document.getElementById('loginPass').value;
   if (u === ADMIN_USER && p === ADMIN_PASS) {
-    const secret = 'changeme123'; // must match ADMIN_SECRET env var on Netlify
+    const secret = '100516050904.'; // must match ADMIN_SECRET env var on Netlify
     localStorage.setItem('pw_secret', secret);
     localStorage.setItem('pw_auth', '1');
     document.getElementById('loginScreen').classList.remove('show');

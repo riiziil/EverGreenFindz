@@ -55,6 +55,19 @@ nav{
 .hamburger{display:none;cursor:pointer;flex-direction:column;gap:5px}
 .hamburger span{display:block;width:22px;height:1.5px;background:var(--black);border-radius:2px;transition:.3s}
 
+/* ── BACK BUTTON ── */
+.back-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:99px;padding:.45rem 1.1rem;
+  font-size:.78rem;font-weight:600;letter-spacing:.04em;
+  color:var(--muted);cursor:pointer;transition:all .2s;
+  margin-bottom:1rem;
+}
+.back-btn:hover{border-color:var(--sage-400);color:var(--sage-600);background:var(--sage-50)}
+.back-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;transition:transform .2s}
+.back-btn:hover svg{transform:translateX(-3px)}
+
 /* ── HERO ── */
 .hero{
   max-width:860px;margin:0 auto;
@@ -491,9 +504,15 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
 <!-- PRODUCT PAGE -->
 <div id="page-product" class="page">
   <div class="product-breadcrumb">
+    <button class="back-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back
+    </button>
+  </div>
+  <div class="product-breadcrumb" style="padding-top:0">
     <span class="crumb" onclick="goHome()">Home</span>
     <span class="sep">›</span>
-    <span class="crumb" id="breadCat" onclick="goHome()"></span>
+    <span class="crumb" id="breadCat" onclick="goBack()"></span>
     <span class="sep">›</span>
     <span id="breadTitle" style="color:var(--black)"></span>
   </div>
@@ -552,6 +571,7 @@ const API_BASE = window.location.hostname === 'localhost' || window.location.hos
 ══════════════════════════ */
 let DATA = { categories: [], products: [] };
 let currentCat = 'all';
+let navHistory = []; // tracks where user came from
 
 /* ══════════════════════════
    FETCH DATA
@@ -679,6 +699,9 @@ function openProduct(id) {
   if (!p) return;
   const catObj = DATA.categories.find(x => x.slug === p.category) || {};
 
+  // Save current state so we can go back
+  navHistory.push({ cat: currentCat, scrollY: window.scrollY });
+
   document.getElementById('breadCat').textContent = catObj.label || p.category;
   document.getElementById('breadTitle').textContent = p.name;
 
@@ -769,7 +792,32 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+function goBack() {
+  const prev = navHistory.pop();
+  showPage('page-home');
+  if (prev) {
+    // restore the category filter they were on
+    const pill = document.querySelector(`.category-bar .pill[data-cat="${prev.cat}"]`);
+    if (pill) {
+      document.querySelectorAll('.category-bar .pill').forEach(p=>p.classList.remove('active'));
+      pill.classList.add('active');
+      currentCat = prev.cat;
+      renderHome(prev.cat);
+    }
+    // restore scroll position
+    setTimeout(() => window.scrollTo({ top: prev.scrollY, behavior: 'smooth' }), 50);
+  } else {
+    renderHome('all');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
 function goHome() {
+  navHistory = [];
+  renderHome('all');
+  // reset pills to All
+  document.querySelectorAll('.category-bar .pill').forEach((p,i)=>p.classList.toggle('active',i===0));
+  currentCat = 'all';
   showPage('page-home');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -788,20 +836,7 @@ function toggleMenu() {
 /* ══════════════════════════
    SAMPLE DATA (fallback)
 ══════════════════════════ */
-const SAMPLE_DATA = {
-  categories:[
-    {id:'cat1',slug:'home',label:'Home',emoji:'🏠'},
-    {id:'cat2',slug:'beauty',label:'Beauty',emoji:'💄'},
-    {id:'cat3',slug:'fitness',label:'Fitness',emoji:'💪'},
-    {id:'cat4',slug:'gadgets',label:'Gadgets',emoji:'📱'},
-  ],
-  products:[
-    {id:'prod1',name:'Wireless Earbuds Pro',category:'gadgets',image:'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&q=80',description:'After testing 14 pairs, these consistently impressed. Balanced audio, long battery.',shortDesc:'We tested 14 budget earbuds so you don\'t have to.',highlights:['32h battery','IPX5 water resistant','ANC included'],rating:4.4,reviews:2847,amazonLink:'https://amazon.com',tiktokLink:'https://tiktok.com',shopeeLink:'https://shopee.ph',featured:true,date:'Mar 5, 2026'},
-    {id:'prod2',name:'Niacinamide 10% Serum',category:'beauty',image:'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&q=80',description:'This serum visibly reduces pores and controls oil within weeks.',shortDesc:'TikTok made us buy it — does it work? We tested 30 days.',highlights:['Minimizes pores','Fades dark spots','Fragrance-free'],rating:4.8,reviews:5610,amazonLink:'https://amazon.com',tiktokLink:'',shopeeLink:'https://shopee.ph',featured:false,date:'Mar 3, 2026'},
-    {id:'prod3',name:'Stackable Storage Set',category:'home',image:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',description:'Modular storage boxes that transformed our shelves.',shortDesc:'Pinterest-worthy organizers on a budget.',highlights:['Stackable design','Holds 5kg','Easy to clean'],rating:4.6,reviews:3290,amazonLink:'https://amazon.com',tiktokLink:'https://tiktok.com',shopeeLink:'https://shopee.ph',featured:false,date:'Feb 27, 2026'},
-    {id:'prod4',name:'Resistance Bands Set',category:'fitness',image:'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80',description:'Five resistance levels from beginner to advanced.',shortDesc:'Everything you need for a full home workout.',highlights:['5 resistance levels','Includes all accessories','Compact & travel-friendly'],rating:4.5,reviews:1980,amazonLink:'https://amazon.com',tiktokLink:'',shopeeLink:'https://shopee.ph',featured:false,date:'Feb 20, 2026'},
-  ]
-};
+const SAMPLE_DATA = { categories: [], products: [] };
 
 /* ══════════════════════════
    INIT
