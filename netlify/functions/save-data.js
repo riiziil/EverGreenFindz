@@ -1,9 +1,7 @@
 // netlify/functions/save-data.js
-// Receives full JSON payload and writes it back to products.json
-// Protected by a simple ADMIN_SECRET env variable
-
-const fs = require('fs');
-const path = require('path');
+// NOTE: Netlify filesystem is READ-ONLY in production.
+// This function cannot persist data. Use the export feature
+// in admin.html to download and commit your data to GitHub instead.
 
 exports.handler = async (event, context) => {
   const headers = {
@@ -20,34 +18,20 @@ exports.handler = async (event, context) => {
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
-  // ── Auth check ──
   const secret = event.headers['x-admin-secret'];
   const expected = process.env.ADMIN_SECRET || 'changeme123';
   if (secret !== expected) {
     return { statusCode: 401, headers, body: JSON.stringify({ error: 'Unauthorized' }) };
   }
 
-  try {
-    const payload = JSON.parse(event.body);
-
-    // Basic validation
-    if (!Array.isArray(payload.products) || !Array.isArray(payload.categories)) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid payload structure' }) };
-    }
-
-    const dataPath = path.join(__dirname, 'data', 'products.json');
-    fs.writeFileSync(dataPath, JSON.stringify(payload, null, 2), 'utf8');
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ success: true, message: 'Data saved successfully' }),
-    };
-  } catch (err) {
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: 'Could not save data: ' + err.message }),
-    };
-  }
+  // Netlify filesystem is read-only — return success so admin doesn't crash.
+  // Data is saved to localStorage in the browser instead.
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify({ 
+      success: true, 
+      message: 'Saved to browser. Export and commit products-data.json to publish to live site.' 
+    }),
+  };
 };

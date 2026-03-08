@@ -377,6 +377,7 @@ img{display:block;width:100%;object-fit:cover}
     </nav>
     <div class="sidebar-footer">
       <button class="view-site-btn" onclick="openExternal('index.html')">🌐 View Site</button>
+      <button class="view-site-btn" style="background:var(--sage-500);margin-bottom:.6rem" onclick="exportData()">⬇ Export & Publish</button>
       <button class="btn-logout" onclick="doLogout()">← Sign Out</button>
     </div>
   </aside>
@@ -998,6 +999,18 @@ function switchPanel(name, el) {
 
 function openExternal(url) { window.open(url, '_blank'); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+function exportData() {
+  const json = JSON.stringify(DATA, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'products-data.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Downloaded! Now replace netlify/functions/products-data.json in GitHub and push.', 'success', 6000);
+}
 
 /* ══════════════════════════
    TOAST
