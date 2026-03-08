@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>EverGreenFindz</title>
+<title>EverGreenFindz — Smart Finds, Real Reviews</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -487,7 +487,7 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
   <footer>
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="footer-logo">Pick<span>Wise</span></div>
+        <div class="footer-logo">EverGreen<span>Findz</span></div>
         <p>Curated product reviews and honest recommendations across Amazon, TikTok Shop, and Shopee — all in one place.</p>
       </div>
       <div class="footer-col"><h4>Browse</h4><ul id="footerCats"></ul></div>
@@ -558,40 +558,59 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
   </div>
 </div>
 
-<script>
+<script type="module">
 /* ══════════════════════════
-   CONFIG  — update after deploy
+   FIREBASE CONFIG
 ══════════════════════════ */
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? ''   // local dev: relative path
-  : '';  // production: same origin via Netlify Functions
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDSAx-lVnZt1UNNt6GMDrxV3cJxT9DNQjk",
+  authDomain: "evergreenfindz-79ecc.firebaseapp.com",
+  projectId: "evergreenfindz-79ecc",
+  storageBucket: "evergreenfindz-79ecc.firebasestorage.app",
+  messagingSenderId: "473066087148",
+  appId: "1:473066087148:web:b2446d33d49ace23817bc9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 /* ══════════════════════════
    STATE
 ══════════════════════════ */
 let DATA = { categories: [], products: [] };
 let currentCat = 'all';
-let navHistory = []; // tracks where user came from
+let navHistory = [];
 
 /* ══════════════════════════
-   FETCH DATA
+   FIREBASE REALTIME LISTENERS
 ══════════════════════════ */
-async function loadData() {
+function loadData() {
   showLoading(true);
-  try {
-    const res = await fetch(API_BASE + '/.netlify/functions/get-data');
-    if (!res.ok) throw new Error('Network error');
-    DATA = await res.json();
-  } catch(e) {
-    // Fallback to bundled sample data for preview
-    DATA = SAMPLE_DATA;
-    showToast('Preview mode — connect to Netlify to load live data');
-  }
-  showLoading(false);
-  buildCategoryBar();
-  buildTagCloud();
-  buildFooterCats();
-  renderHome();
+
+  // Listen to categories
+  onSnapshot(collection(db, 'categories'), (snap) => {
+    DATA.categories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    buildCategoryBar();
+    buildTagCloud();
+    buildFooterCats();
+    renderHome(currentCat);
+  });
+
+  // Listen to products — auto-updates when admin saves
+  onSnapshot(query(collection(db, 'products'), orderBy('createdAt', 'desc')), (snap) => {
+    DATA.products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    showLoading(false);
+    buildCategoryBar();
+    buildTagCloud();
+    buildFooterCats();
+    renderHome(currentCat);
+  }, (err) => {
+    showLoading(false);
+    console.error(err);
+  });
 }
 
 /* ══════════════════════════
@@ -796,7 +815,6 @@ function goBack() {
   const prev = navHistory.pop();
   showPage('page-home');
   if (prev) {
-    // restore the category filter they were on
     const pill = document.querySelector(`.category-bar .pill[data-cat="${prev.cat}"]`);
     if (pill) {
       document.querySelectorAll('.category-bar .pill').forEach(p=>p.classList.remove('active'));
@@ -804,18 +822,15 @@ function goBack() {
       currentCat = prev.cat;
       renderHome(prev.cat);
     }
-    // restore scroll position
     setTimeout(() => window.scrollTo({ top: prev.scrollY, behavior: 'smooth' }), 50);
   } else {
     renderHome('all');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
-
 function goHome() {
   navHistory = [];
   renderHome('all');
-  // reset pills to All
   document.querySelectorAll('.category-bar .pill').forEach((p,i)=>p.classList.toggle('active',i===0));
   currentCat = 'all';
   showPage('page-home');
@@ -833,10 +848,14 @@ function toggleMenu() {
   document.getElementById('navLinks').classList.toggle('open');
 }
 
-/* ══════════════════════════
-   SAMPLE DATA (fallback)
-══════════════════════════ */
-const SAMPLE_DATA = { categories: [], products: [] };
+// Expose functions needed by inline HTML onclick handlers
+window.goHome = goHome;
+window.goBack = goBack;
+window.toggleMenu = toggleMenu;
+window.filterCat = filterCat;
+window.filterCatBySlug = filterCatBySlug;
+window.handleSearch = handleSearch;
+window.openProduct = openProduct;
 
 /* ══════════════════════════
    INIT
