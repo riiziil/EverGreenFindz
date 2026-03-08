@@ -16,21 +16,17 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const dataPath = path.resolve(__dirname, '..', '..', 'data', 'products.json');
+    // __dirname is /var/task on Netlify, data folder lives at /var/task/data/
+    const dataPath = path.join(__dirname, 'data', 'products.json');
     const raw = fs.readFileSync(dataPath, 'utf8');
-    return {
-      statusCode: 200,
-      headers,
-      body: raw,
-    };
+    return { statusCode: 200, headers, body: raw };
   } catch (err) {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         error: 'Could not read data: ' + err.message,
-        __dirname,
-        resolved: path.resolve(__dirname, '..', '..', 'data', 'products.json')
+        tried: path.join(__dirname, 'data', 'products.json'),
       }),
     };
   }

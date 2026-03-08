@@ -35,7 +35,7 @@ exports.handler = async (event, context) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid payload structure' }) };
     }
 
-    const dataPath = path.resolve(__dirname, '..', '..', 'data', 'products.json');
+    const dataPath = path.join(__dirname, 'data', 'products.json');
     fs.writeFileSync(dataPath, JSON.stringify(payload, null, 2), 'utf8');
 
     return {
