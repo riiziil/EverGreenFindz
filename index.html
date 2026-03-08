@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>EverGreenFindz — Smart Finds, Real Reviews</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3843907081852145" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -103,7 +104,13 @@ nav{
 .hero-search button{background:var(--sage-500);color:#fff;border:none;padding:0 1.5rem;cursor:pointer;font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;transition:background .2s}
 .hero-search button:hover{background:var(--sage-600)}
 
-/* ── CATEGORY BAR ── */
+/* ── ADS ── */
+.ad-slot{
+  max-width:1200px;margin:0 auto;
+  padding:0 clamp(1.2rem,5vw,2.5rem);
+  text-align:center;
+}
+.ad-slot ins{display:block}
 .category-bar{
   display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;
   padding:0 clamp(1rem,5vw,2rem) 3rem;
@@ -224,21 +231,20 @@ nav{
   font-family:var(--fd);font-size:1.1rem;font-weight:600;color:var(--black);
   letter-spacing:.01em;
 }
-.newsletter-body{padding:1.3rem}
-.newsletter-body p{font-size:.83rem;color:var(--muted);margin-bottom:1rem;line-height:1.6}
-.newsletter-body input{
-  width:100%;border:1.5px solid var(--border);border-radius:8px;
-  padding:.6rem 1rem;font-size:.85rem;outline:none;
-  margin-bottom:.65rem;color:var(--ink);background:var(--off-white);
-  transition:border-color .2s;
+/* collections sidebar */
+.collections-list{padding:.4rem 0}
+.collection-sidebar-item{
+  display:flex;align-items:center;gap:10px;
+  padding:.65rem 1.3rem;cursor:pointer;transition:background .15s;
+  border-bottom:1px solid var(--sage-50);
 }
-.newsletter-body input:focus{border-color:var(--sage-400);background:#fff}
-.newsletter-body button{
-  width:100%;background:var(--sage-500);color:#fff;border:none;
-  border-radius:8px;padding:.65rem;font-size:.8rem;font-weight:600;
-  letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background .2s;
-}
-.newsletter-body button:hover{background:var(--sage-600)}
+.collection-sidebar-item:last-child{border-bottom:none}
+.collection-sidebar-item:hover{background:var(--sage-50)}
+.collection-sidebar-icon{font-size:1.2rem;width:22px;text-align:center;flex-shrink:0}
+.collection-sidebar-info{flex:1;min-width:0}
+.collection-sidebar-name{font-size:.83rem;font-weight:500;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.collection-sidebar-count{font-size:.7rem;color:var(--muted)}
+.collection-sidebar-arrow{font-size:.75rem;color:var(--sage-400)}
 .tag-cloud{padding:1rem 1.3rem;display:flex;flex-wrap:wrap;gap:6px}
 .tag-item{
   background:var(--sage-50);border:1px solid var(--sage-100);
@@ -247,14 +253,6 @@ nav{
 }
 .tag-item:hover{background:var(--sage-500);color:#fff;border-color:var(--sage-500)}
 
-/* ── DISCLOSURE / FOOTER ── */
-.disclosure{max-width:1200px;margin:0 auto;padding:0 clamp(1.2rem,5vw,2.5rem) 2rem}
-.disclosure-box{
-  background:var(--sage-50);border-left:3px solid var(--sage-400);
-  border-radius:0 8px 8px 0;padding:1rem 1.3rem;
-  font-size:.8rem;color:var(--muted);line-height:1.6;
-}
-.disclosure-box strong{color:var(--sage-600)}
 footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.2rem,5vw,3rem) 2.5rem}
 .footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
 .footer-logo{font-family:var(--fd);font-size:1.4rem;color:#fff;margin-bottom:.75rem;letter-spacing:.02em}
@@ -354,6 +352,33 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
 .related-section{max-width:1200px;margin:0 auto;padding:0 clamp(1.2rem,5vw,2.5rem) 5rem}
 .related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:1.5rem}
 
+/* share button */
+.share-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:99px;padding:.45rem 1.1rem;
+  font-size:.78rem;font-weight:600;letter-spacing:.04em;
+  color:var(--muted);cursor:pointer;transition:all .2s;
+}
+.share-btn:hover{border-color:var(--sage-400);color:var(--sage-600);background:var(--sage-50)}
+.share-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5}
+#page-collection{animation:fadeUp .4s ease both}
+.collection-page-header{
+  max-width:1200px;margin:0 auto;
+  padding:2rem clamp(1.2rem,5vw,2.5rem) 1.5rem;
+  display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;
+}
+.collection-page-icon{font-size:3rem;line-height:1;flex-shrink:0}
+.collection-page-meta h1{font-family:var(--fd);font-size:clamp(1.6rem,4vw,2.4rem);font-weight:600;color:var(--black);line-height:1.2}
+.collection-page-meta p{font-size:.88rem;color:var(--muted);margin-top:.4rem;line-height:1.7}
+.collection-page-count{
+  display:inline-flex;align-items:center;gap:6px;margin-top:.5rem;
+  font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--sage-600);
+}
+.collection-products-wrap{max-width:1200px;margin:0 auto;padding:0 clamp(1.2rem,5vw,2.5rem) 5rem}
+.collection-products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:1.5rem}
+
 /* animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .hero{animation:fadeUp .7s ease both}
@@ -390,6 +415,7 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
   .product-layout{grid-template-columns:1fr;gap:2rem}
   .related-grid{grid-template-columns:1fr 1fr}
   .footer-inner{grid-template-columns:1fr 1fr}
+  .collection-products-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:640px){
   .nav-links{display:none}
@@ -407,6 +433,7 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
   .footer-inner{grid-template-columns:1fr}
   .footer-bottom{flex-direction:column;gap:.5rem;text-align:center}
   .related-grid{grid-template-columns:1fr}
+  .collection-products-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -426,8 +453,7 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
   </div>
   <ul class="nav-links" id="navLinks">
     <li><a onclick="goHome()">Home</a></li>
-    <li><a onclick="goHome()">Reviews</a></li>
-    <li><a onclick="goHome()">Deals</a></li>
+    <li><a onclick="showCollectionsPage()">Collections</a></li>
   </ul>
   <div class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
@@ -435,14 +461,25 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
 <!-- HOME PAGE -->
 <div id="page-home" class="page active">
   <section class="hero">
-    <div class="hero-eyebrow">Curated Affiliate Picks</div>
+    <div class="hero-eyebrow">Only The Best Items For You</div>
     <h1>Find things worth <em>buying</em>,<br>not just browsing.</h1>
-    <p>Honest reviews and curated finds — shop across Amazon, TikTok Shop, and Shopee all in one place.</p>
+    <p>All the essentials from every store in one site, for you.</p>
     <div class="hero-search">
-      <input type="text" id="searchInput" placeholder="Search products, reviews, categories…" oninput="handleSearch(this.value)"/>
+      <input type="text" id="searchInput" placeholder="Search products, categories…" oninput="handleSearch(this.value)"/>
       <button>Search</button>
     </div>
   </section>
+
+  <!-- AD SLOT 1 -->
+  <div class="ad-slot" style="padding-bottom:1.5rem">
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-3843907081852145"
+      data-ad-slot="auto"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
 
   <div class="category-bar" id="categoryBar">
     <div class="pill active" data-cat="all" onclick="filterCat('all',this)">🛍 All</div>
@@ -451,6 +488,16 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
   <div class="main-wrap">
     <main>
       <div id="featuredSection"></div>
+
+      <!-- AD SLOT 2 -->
+      <div id="adSlot2" style="margin-bottom:1.5rem;text-align:center;display:none">
+        <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-client="ca-pub-3843907081852145"
+          data-ad-slot="auto"
+          data-ad-format="auto"
+          data-full-width-responsive="true"></ins>
+      </div>
       <div class="section-header" id="latestHeader" style="display:none">
         <span class="section-title">Latest Posts</span>
         <span class="section-link">View all →</span>
@@ -463,36 +510,22 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
       </div>
     </main>
     <aside class="sidebar">
-      <div class="sidebar-widget">
-        <div class="widget-head">Weekly Picks</div>
-        <div class="newsletter-body">
-          <p>Get our top 5 finds every week — straight to your inbox. No spam, just good deals.</p>
-          <input type="email" placeholder="your@email.com"/>
-          <button>Subscribe Free</button>
-        </div>
-      </div>
-      <div class="sidebar-widget">
-        <div class="widget-head">Browse Topics</div>
-        <div class="tag-cloud" id="tagCloud"></div>
+      <div class="sidebar-widget" id="collectionsWidget" style="display:none">
+        <div class="widget-head">📋 Collections</div>
+        <div class="collections-list" id="sidebarCollections"></div>
       </div>
     </aside>
   </div>
 
-  <div class="disclosure">
-    <div class="disclosure-box">
-      <strong>Affiliate Disclosure:</strong> Some links on this site are affiliate links. If you click and make a purchase, we may earn a small commission at no extra cost to you. We only recommend products we've genuinely researched or tested.
-    </div>
-  </div>
-
-  <footer>
-    <div class="footer-inner">
+<footer>
+    <div class="footer-inner" style="grid-template-columns:1fr">
       <div class="footer-brand">
         <div class="footer-logo">EverGreen<span>Findz</span></div>
-        <p>Curated product reviews and honest recommendations across Amazon, TikTok Shop, and Shopee — all in one place.</p>
+        <p>All the essentials from every store — Amazon, TikTok Shop, and Shopee — in one place.</p>
       </div>
-      <div class="footer-col"><h4>Browse</h4><ul id="footerCats"></ul></div>
-      <div class="footer-col"><h4>Explore</h4><ul><li><a>Gift Guides</a></li><li><a>Weekly Deals</a></li><li><a>Viral Finds</a></li></ul></div>
-      <div class="footer-col"><h4>Info</h4><ul><li><a>About</a></li><li><a>Contact</a></li><li><a>Privacy Policy</a></li><li><a>Disclosure</a></li></ul></div>
+    </div>
+    <div style="max-width:1200px;margin:0 auto;padding:1.5rem 0;border-top:1px solid rgba(255,255,255,.08);font-size:.75rem;color:rgba(255,255,255,.3);line-height:1.7">
+      <strong style="color:rgba(255,255,255,.45)">Disclaimer:</strong> EverGreenFindz does not own, manufacture, or sell any of the products featured on this site. All product names, images, and trademarks belong to their respective owners. We are an independent affiliate site — when you click a link and make a purchase, we may earn a small commission at no extra cost to you. Product availability and prices may vary by platform and are subject to change without notice.
     </div>
     <div class="footer-bottom">
       <span>© 2026 EverGreenFindz. All rights reserved.</span>
@@ -546,15 +579,56 @@ footer{background:var(--black);color:rgba(255,255,255,.45);padding:4rem clamp(1.
           <span class="shop-btn-arrow">→</span>
         </a>
       </div>
-      <div class="product-note"><strong>Price tip:</strong> Prices vary by platform. Compare before you buy.</div>
+      <div class="product-note" id="productPriceTip" style="display:none"><strong>💡 Price tip:</strong> This product is available on multiple platforms. Compare prices before you buy!</div>
     </div>
   </div>
   <div class="related-section">
+    <!-- AD SLOT 3 -->
+    <div style="text-align:center;margin-bottom:2rem">
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-3843907081852145"
+        data-ad-slot="auto"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
     <div class="section-header">
       <span class="section-title">You Might Also Like</span>
       <span class="section-link" onclick="goHome()">See all →</span>
     </div>
     <div class="related-grid" id="relatedGrid"></div>
+  </div>
+</div>
+
+<!-- COLLECTION PAGE -->
+<div id="page-collection" class="page">
+  <div class="product-breadcrumb">
+    <button class="back-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back
+    </button>
+  </div>
+  <div class="collection-page-header">
+    <div class="collection-page-icon" id="collectionIcon"></div>
+    <div class="collection-page-meta">
+      <h1 id="collectionTitle"></h1>
+      <p id="collectionDesc"></p>
+      <div style="display:flex;align-items:center;gap:.75rem;margin-top:.6rem;flex-wrap:wrap">
+        <div class="collection-page-count" id="collectionCount"></div>
+        <button class="share-btn" onclick="shareCollection()">
+          <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+          Share Collection
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="collection-products-wrap">
+    <div class="section-header" style="cursor:pointer" onclick="toggleCollectionGrid()">
+      <span class="section-title">All Items</span>
+      <span id="collectionToggleBtn" style="font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--sage-500)">▲ Collapse</span>
+    </div>
+    <div class="collection-products-grid" id="collectionGrid"></div>
   </div>
 </div>
 
@@ -580,7 +654,7 @@ const db = getFirestore(app);
 /* ══════════════════════════
    STATE
 ══════════════════════════ */
-let DATA = { categories: [], products: [] };
+let DATA = { categories: [], products: [], collections: [] };
 let currentCat = 'all';
 let navHistory = [];
 
@@ -599,13 +673,20 @@ function loadData() {
     renderHome(currentCat);
   });
 
-  // Listen to products — auto-updates when admin saves
+  // Listen to collections
+  onSnapshot(collection(db, 'collections'), (snap) => {
+    DATA.collections = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    buildSidebarCollections();
+  });
+
+  // Listen to products
   onSnapshot(query(collection(db, 'products'), orderBy('createdAt', 'desc')), (snap) => {
     DATA.products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     showLoading(false);
     buildCategoryBar();
     buildTagCloud();
     buildFooterCats();
+    buildSidebarCollections();
     renderHome(currentCat);
   }, (err) => {
     showLoading(false);
@@ -624,19 +705,122 @@ function buildCategoryBar() {
   });
 }
 
-function buildTagCloud() {
-  document.getElementById('tagCloud').innerHTML =
-    DATA.categories.map(c =>
-      `<span class="tag-item" onclick="filterCatBySlug('${c.slug}')">${c.emoji} ${c.label}</span>`
-    ).join('') + '<span class="tag-item">Gift Ideas</span><span class="tag-item">Under ₱500</span>';
+function buildTagCloud() { /* removed — Browse Topics widget deleted */ }
+
+function buildFooterCats() { /* removed — footer Browse section deleted */ }
+
+function buildSidebarCollections() {
+  const widget = document.getElementById('collectionsWidget');
+  const el = document.getElementById('sidebarCollections');
+  if (!DATA.collections.length) {
+    widget.style.display = 'none';
+    return;
+  }
+  widget.style.display = 'block';
+  el.innerHTML = DATA.collections.map(col => {
+    const count = (col.productIds||[]).length;
+    return `<div class="collection-sidebar-item" onclick="openCollection('${col.id}')">
+      <span class="collection-sidebar-icon">${col.icon||'📋'}</span>
+      <div class="collection-sidebar-info">
+        <div class="collection-sidebar-name">${col.name}</div>
+        <div class="collection-sidebar-count">${count} item${count!==1?'s':''}</div>
+      </div>
+      <span class="collection-sidebar-arrow">›</span>
+    </div>`;
+  }).join('');
 }
 
-function buildFooterCats() {
-  document.getElementById('footerCats').innerHTML =
-    DATA.categories.slice(0,6).map(c =>
-      `<li><a onclick="filterCatBySlug('${c.slug}')">${c.label}</a></li>`
-    ).join('');
+function openCollection(id) {
+  const col = DATA.collections.find(c => c.id === id);
+  if (!col) return;
+  navHistory.push({ page: 'home', cat: currentCat, scrollY: window.scrollY });
+
+  // Set URL hash so it's shareable
+  history.pushState(null, '', `#collection-${id}`);
+
+  document.getElementById('collectionIcon').textContent = col.icon || '📋';
+  document.getElementById('collectionTitle').textContent = col.name;
+  document.getElementById('collectionDesc').textContent = col.description || '';
+  const ids = col.productIds || [];
+  const items = ids.map(pid => DATA.products.find(p => p.id === pid)).filter(Boolean);
+  document.getElementById('collectionCount').textContent = `${items.length} item${items.length!==1?'s':''}`;
+
+  // Reset expand state
+  const grid = document.getElementById('collectionGrid');
+  const btn = document.getElementById('collectionToggleBtn');
+  grid.style.display = '';
+  btn.textContent = '▲ Collapse';
+
+  grid.innerHTML = items.length
+    ? items.map(p => {
+        const catObj = DATA.categories.find(x => x.slug === p.category) || {};
+        return `<article class="post-card" onclick="openProduct('${p.id}')">
+          <div class="card-img">
+            ${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy"/>` : `<div class="card-img-placeholder">${catObj.emoji||'🛍'}</div>`}
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="cat-badge">${catObj.emoji||''} ${catObj.label||p.category}</span>
+            </div>
+            <h3>${p.name}</h3>
+            <p>${p.shortDesc||''}</p>
+          </div>
+          <div class="card-footer">
+            <span class="card-read">View →</span>
+            <span class="card-rating"><span class="star-fill">★</span> ${p.rating||''}</span>
+          </div>
+        </article>`;
+      }).join('')
+    : '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">No products in this collection yet.</div>';
+
+  showPage('page-collection');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+function toggleCollectionGrid() {
+  const grid = document.getElementById('collectionGrid');
+  const btn = document.getElementById('collectionToggleBtn');
+  const collapsed = grid.style.display === 'none';
+  grid.style.display = collapsed ? '' : 'none';
+  btn.textContent = collapsed ? '▲ Collapse' : '▼ Expand';
+}
+
+function shareCollection() {
+  const url = window.location.origin + window.location.pathname + window.location.hash;
+  if (navigator.share) {
+    navigator.share({ title: document.getElementById('collectionTitle').textContent, url })
+      .catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Link copied to clipboard!');
+    }).catch(() => {
+      showToast('Copy this link: ' + url);
+    });
+  }
+}
+
+// Handle direct URL with hash on page load
+function checkHashRoute() {
+  const hash = window.location.hash;
+  if (hash.startsWith('#collection-')) {
+    const id = hash.replace('#collection-', '');
+    // Wait for data to load before opening
+    const tryOpen = setInterval(() => {
+      if (DATA.collections.length > 0 || DATA.products.length > 0) {
+        clearInterval(tryOpen);
+        openCollection(id);
+      }
+    }, 100);
+    setTimeout(() => clearInterval(tryOpen), 5000);
+  }
+}
+
+// Clear hash when going home
+const _origGoHome = goHome;
+window.goHome = function() {
+  history.pushState(null, '', window.location.pathname);
+  _origGoHome();
+};
 
 function renderHome(cat) {
   const c = cat || currentCat;
@@ -671,8 +855,15 @@ function renderHome(cat) {
   } else {
     fs.innerHTML = '';
   }
-
-  // grid
+  // Show ad slot 2 only when featured product exists
+  const adSlot2 = document.getElementById('adSlot2');
+  if (adSlot2) {
+    adSlot2.style.display = featured ? 'block' : 'none';
+    if (featured && !adSlot2.dataset.pushed) {
+      adSlot2.dataset.pushed = '1';
+      try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+    }
+  }
   const gridEl = document.getElementById('postGrid');
   const nr = document.getElementById('noResults');
   document.getElementById('latestHeader').style.display = grid.length ? 'flex' : 'none';
@@ -718,15 +909,14 @@ function openProduct(id) {
   if (!p) return;
   const catObj = DATA.categories.find(x => x.slug === p.category) || {};
 
-  // Save current state so we can go back
-  navHistory.push({ cat: currentCat, scrollY: window.scrollY });
+  navHistory.push({ page: 'product', cat: currentCat, scrollY: window.scrollY });
 
   document.getElementById('breadCat').textContent = catObj.label || p.category;
   document.getElementById('breadTitle').textContent = p.name;
 
   const imgEl = document.getElementById('productMainImg');
   imgEl.innerHTML = p.image
-    ? `<img src="${p.image}" alt="${p.name}"/>`
+    ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover"/>`
     : `<div class="product-main-img-placeholder">${catObj.emoji||'🛍'}</div>`;
 
   document.getElementById('productCat').textContent = `${catObj.emoji||''} ${catObj.label||p.category}`;
@@ -736,15 +926,24 @@ function openProduct(id) {
   document.getElementById('productDesc').textContent = p.description||'';
   document.getElementById('productHighlights').innerHTML = (p.highlights||[]).map(h=>`<li>${h}</li>`).join('');
 
-  const setBtn = (btnId, url, label) => {
-    const el = document.getElementById(btnId);
-    if (url && url.trim() !== '' && url !== '#') {
-      el.href = url; el.classList.remove('hidden');
-    } else { el.classList.add('hidden'); }
-  };
-  setBtn('btnAmazon', p.amazonLink);
-  setBtn('btnTiktok', p.tiktokLink);
-  setBtn('btnShopee', p.shopeeLink);
+  const hasAmazon = p.amazonLink && p.amazonLink.trim() && p.amazonLink !== '#';
+  const hasTiktok = p.tiktokLink && p.tiktokLink.trim() && p.tiktokLink !== '#';
+  const hasShopee = p.shopeeLink && p.shopeeLink.trim() && p.shopeeLink !== '#';
+
+  const btnAmazon = document.getElementById('btnAmazon');
+  const btnTiktok = document.getElementById('btnTiktok');
+  const btnShopee = document.getElementById('btnShopee');
+
+  if (hasAmazon) { btnAmazon.href = p.amazonLink; btnAmazon.classList.remove('hidden'); }
+  else btnAmazon.classList.add('hidden');
+  if (hasTiktok) { btnTiktok.href = p.tiktokLink; btnTiktok.classList.remove('hidden'); }
+  else btnTiktok.classList.add('hidden');
+  if (hasShopee) { btnShopee.href = p.shopeeLink; btnShopee.classList.remove('hidden'); }
+  else btnShopee.classList.add('hidden');
+
+  // Show price tip only when 2+ stores available
+  const storeCount = [hasAmazon, hasTiktok, hasShopee].filter(Boolean).length;
+  document.getElementById('productPriceTip').style.display = storeCount >= 2 ? 'block' : 'none';
 
   // related
   const related = DATA.products.filter(r => r.id !== id).slice(0,3);
@@ -856,11 +1055,15 @@ window.filterCat = filterCat;
 window.filterCatBySlug = filterCatBySlug;
 window.handleSearch = handleSearch;
 window.openProduct = openProduct;
+window.openCollection = openCollection;
+window.shareCollection = shareCollection;
+window.toggleCollectionGrid = toggleCollectionGrid;
 
 /* ══════════════════════════
    INIT
 ══════════════════════════ */
 loadData();
+checkHashRoute();
 </script>
 </body>
 </html>

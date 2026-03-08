@@ -250,12 +250,27 @@ img{display:block;width:100%;object-fit:cover}
 .form-textarea{resize:vertical;min-height:85px;line-height:1.6}
 .form-hint{font-size:.72rem;color:var(--muted)}
 .img-preview{
-  width:100%;height:140px;border-radius:8px;border:1.5px dashed var(--border);
+  width:100%;height:160px;border-radius:8px;border:1.5px dashed var(--border);
   display:flex;align-items:center;justify-content:center;
   background:var(--sage-50);overflow:hidden;margin-top:.4rem;
+  position:relative;
 }
 .img-preview img{width:100%;height:100%;object-fit:cover;border-radius:6px}
 .img-preview-placeholder{font-size:2rem;color:var(--sage-300)}
+.img-upload-row{display:flex;gap:.5rem;align-items:center;margin-top:.5rem}
+.img-upload-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--sage-50);border:1.5px solid var(--border);border-radius:8px;
+  padding:.5rem .9rem;font-size:.78rem;font-weight:600;cursor:pointer;
+  color:var(--sage-600);transition:all .2s;white-space:nowrap;
+}
+.img-upload-btn:hover{background:var(--sage-100);border-color:var(--sage-300)}
+.img-upload-input{display:none}
+.img-upload-progress{
+  font-size:.75rem;color:var(--muted);margin-top:.3rem;
+  display:none;
+}
+.img-upload-progress.show{display:block}
 
 /* highlights */
 .highlights-editor{display:flex;flex-direction:column;gap:.5rem}
@@ -374,6 +389,9 @@ img{display:block;width:100%;object-fit:cover}
       <div class="nav-item" data-panel="categories" onclick="switchPanel('categories',this)">
         <span class="nav-item-icon">🗂</span> Categories
       </div>
+      <div class="nav-item" data-panel="collections" onclick="switchPanel('collections',this)">
+        <span class="nav-item-icon">📋</span> Collections
+      </div>
     </nav>
     <div class="sidebar-footer">
       <button class="view-site-btn" onclick="openExternal('index.html')">🌐 View Site</button>
@@ -402,7 +420,7 @@ img{display:block;width:100%;object-fit:cover}
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-num" id="stat-products">—</div><div class="stat-label">Total Products</div></div>
         <div class="stat-card"><div class="stat-icon">🗂</div><div class="stat-num" id="stat-categories">—</div><div class="stat-label">Categories</div></div>
-        <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num" id="stat-featured">—</div><div class="stat-label">Featured Post</div></div>
+        <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-num" id="stat-collections">—</div><div class="stat-label">Collections</div></div>
         <div class="stat-card"><div class="stat-icon">🛒</div><div class="stat-num" id="stat-links">—</div><div class="stat-label">Affiliate Links</div></div>
       </div>
       <div class="recent-title">Recent Products</div>
@@ -442,6 +460,17 @@ img{display:block;width:100%;object-fit:cover}
         </table>
       </div>
     </div>
+
+    <!-- COLLECTIONS PANEL -->
+    <div class="panel" id="panel-collections">
+      <div class="panel-header">
+        <div><h2>Collections</h2><p>Curated lists like "Streamer Essentials" or "Pet Must-Haves".</p></div>
+        <button class="btn btn-sage" onclick="openCollectionModal()">＋ New Collection</button>
+      </div>
+      <div class="table-wrap" id="collectionsTableWrap">
+        <div class="empty-state"><div class="empty-state-icon">📋</div><p>No collections yet. Create your first one!</p></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -478,10 +507,18 @@ img{display:block;width:100%;object-fit:cover}
           </select>
         </div>
         <div class="form-group span2">
-          <label class="form-label">Image URL</label>
-          <input class="form-input" id="f-image" placeholder="https://images.unsplash.com/…" oninput="previewImage(this.value)"/>
-          <div class="form-hint">Paste any direct image URL (Unsplash, Cloudinary, etc.)</div>
+          <label class="form-label">Product Image</label>
           <div class="img-preview" id="imgPreview"><div class="img-preview-placeholder">🖼</div></div>
+          <div class="img-upload-row">
+            <label class="img-upload-btn">
+              📁 Upload Image
+              <input class="img-upload-input" type="file" id="f-image-file" accept="image/*" onchange="handleImageUpload(this)"/>
+            </label>
+            <span style="font-size:.75rem;color:var(--muted)">or paste URL:</span>
+            <input class="form-input" id="f-image" placeholder="https://…" oninput="previewImage(this.value)" style="flex:1;min-width:0"/>
+          </div>
+          <div class="img-upload-progress" id="imgUploadProgress">⏳ Uploading…</div>
+          <div class="form-hint" style="margin-top:.3rem">Upload from your device or paste any image URL. Image auto-fits the frame.</div>
         </div>
         <div class="form-group span2">
           <label class="form-label">Short Description <span class="req">*</span></label>
@@ -554,12 +591,51 @@ img{display:block;width:100%;object-fit:cover}
   </div>
 </div>
 
+<!-- COLLECTION MODAL -->
+<div class="modal-overlay" id="collectionModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="collectionModalTitle">New Collection</h3>
+      <button class="modal-close" onclick="closeCollectionModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Icon (emoji) <span class="req">*</span></label>
+          <input class="form-input" id="fc2-icon" placeholder="e.g. 🎮" maxlength="4"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Collection Name <span class="req">*</span></label>
+          <input class="form-input" id="fc2-name" placeholder="e.g. Streamer Essentials"/>
+        </div>
+        <div class="form-group span2">
+          <label class="form-label">Description</label>
+          <input class="form-input" id="fc2-desc" placeholder="Short description shown on the collection page…"/>
+        </div>
+        <div class="form-group span2">
+          <label class="form-label">Products in this Collection</label>
+          <div class="form-hint" style="margin-bottom:.6rem">Check the products you want to include:</div>
+          <div id="collectionProductPicker" style="display:flex;flex-direction:column;gap:.4rem;max-height:260px;overflow-y:auto;border:1.5px solid var(--border);border-radius:8px;padding:.6rem .8rem;background:var(--off-white)">
+            <div style="color:var(--muted);font-size:.82rem">No products yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-red" id="btnDeleteCollection" onclick="deleteCollection()" style="display:none;margin-right:auto">🗑 Delete</button>
+      <button class="btn btn-outline" onclick="closeCollectionModal()">Cancel</button>
+      <button class="btn btn-sage" onclick="saveCollection()">💾 Save Collection</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 /* ══════════════════════════
    FIREBASE
 ══════════════════════════ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDSAx-lVnZt1UNNt6GMDrxV3cJxT9DNQjk",
@@ -572,10 +648,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 // Credentials
-const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'pickwise2026';
+const ADMIN_USER = 'iamevergreen';
+const ADMIN_PASS = '100516050904.';
 
 /* ══════════════════════════
    AUTH
@@ -610,15 +687,15 @@ function checkAuth() {
 /* ══════════════════════════
    STATE
 ══════════════════════════ */
-let DATA = { categories: [], products: [] };
+let DATA = { categories: [], products: [], collections: [] };
 let editingProductId = null;
 let editingCatId = null;
+let editingCollectionId = null;
 
 /* ══════════════════════════
    INIT — realtime listeners
 ══════════════════════════ */
 function init() {
-  // Listen to categories in realtime
   onSnapshot(collection(db, 'categories'), (snap) => {
     DATA.categories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderCatTable();
@@ -626,7 +703,6 @@ function init() {
     populateCatSelects();
   });
 
-  // Listen to products in realtime
   onSnapshot(query(collection(db, 'products'), orderBy('createdAt', 'desc')), (snap) => {
     DATA.products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderProductTable();
@@ -635,6 +711,12 @@ function init() {
   }, (err) => {
     setSaveStatus('error', '⚠ Connection error');
     console.error(err);
+  });
+
+  onSnapshot(collection(db, 'collections'), (snap) => {
+    DATA.collections = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCollectionsTable();
+    renderDashboard();
   });
 }
 
@@ -680,6 +762,47 @@ async function deleteCategory_db(id) {
   }
 }
 
+async function saveCollection_db(data) {
+  setSaveStatus('saving', 'Saving…');
+  try {
+    await setDoc(doc(db, 'collections', data.id), data);
+    setSaveStatus('saved', '✓ Saved');
+    showToast('Collection saved!', 'success');
+  } catch(e) {
+    setSaveStatus('error', '⚠ Save failed');
+    showToast('Error saving: ' + e.message, 'error');
+  }
+}
+
+async function deleteCollection_db(id) {
+  try {
+    await deleteDoc(doc(db, 'collections', id));
+    showToast('Collection deleted', 'success');
+  } catch(e) {
+    showToast('Error deleting: ' + e.message, 'error');
+  }
+}
+
+async function handleImageUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const progress = document.getElementById('imgUploadProgress');
+  progress.textContent = '⏳ Uploading…';
+  progress.classList.add('show');
+  try {
+    const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    document.getElementById('f-image').value = url;
+    previewImage(url);
+    progress.textContent = '✓ Uploaded!';
+    setTimeout(() => progress.classList.remove('show'), 2000);
+  } catch(e) {
+    progress.textContent = '⚠ Upload failed: ' + e.message;
+    showToast('Image upload failed: ' + e.message, 'error');
+  }
+}
+
 function setSaveStatus(cls, msg) {
   const el = document.getElementById('saveStatus');
   el.className = 'save-status' + (cls ? ' ' + cls : '');
@@ -692,8 +815,7 @@ function setSaveStatus(cls, msg) {
 function renderDashboard() {
   document.getElementById('stat-products').textContent = DATA.products.length;
   document.getElementById('stat-categories').textContent = DATA.categories.length;
-  const featured = DATA.products.find(p=>p.featured);
-  document.getElementById('stat-featured').textContent = featured ? '1' : '0';
+  document.getElementById('stat-collections').textContent = DATA.collections.length;
   const links = DATA.products.reduce((n,p)=>{
     if(p.amazonLink&&p.amazonLink.length>5) n++;
     if(p.tiktokLink&&p.tiktokLink.length>5) n++;
@@ -789,6 +911,106 @@ function renderCatTable() {
       </td>
     </tr>`;
   }).join('');
+}
+
+/* ══════════════════════════
+   COLLECTIONS
+══════════════════════════ */
+function renderCollectionsTable() {
+  const wrap = document.getElementById('collectionsTableWrap');
+  if (!DATA.collections.length) {
+    wrap.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>No collections yet. Create your first one!</p></div>';
+    return;
+  }
+  wrap.innerHTML = `<table class="data-table">
+    <thead><tr><th>Icon</th><th>Name</th><th>Description</th><th>Products</th><th>Actions</th></tr></thead>
+    <tbody>${DATA.collections.map(col => {
+      const count = (col.productIds||[]).length;
+      return `<tr>
+        <td style="font-size:1.6rem">${col.icon||'📋'}</td>
+        <td style="font-weight:500">${col.name}</td>
+        <td style="font-size:.82rem;color:var(--muted)">${col.description||'—'}</td>
+        <td><span class="badge">${count} item${count!==1?'s':''}</span></td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-blue btn-sm" onclick="openCollectionModal('${col.id}')">✏ Edit</button>
+          <button class="btn btn-red btn-sm" style="margin-left:.4rem" onclick="confirmDeleteCollection('${col.id}')">🗑</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function openCollectionModal(id) {
+  editingCollectionId = id || null;
+  document.getElementById('collectionModalTitle').textContent = id ? 'Edit Collection' : 'New Collection';
+  document.getElementById('btnDeleteCollection').style.display = id ? 'flex' : 'none';
+
+  if (id) {
+    const col = DATA.collections.find(c => c.id === id);
+    document.getElementById('fc2-icon').value = col.icon || '';
+    document.getElementById('fc2-name').value = col.name || '';
+    document.getElementById('fc2-desc').value = col.description || '';
+    buildProductPicker(col.productIds || []);
+  } else {
+    document.getElementById('fc2-icon').value = '';
+    document.getElementById('fc2-name').value = '';
+    document.getElementById('fc2-desc').value = '';
+    buildProductPicker([]);
+  }
+  document.getElementById('collectionModal').classList.add('show');
+}
+
+function buildProductPicker(selectedIds) {
+  const picker = document.getElementById('collectionProductPicker');
+  if (!DATA.products.length) {
+    picker.innerHTML = '<div style="color:var(--muted);font-size:.82rem">No products yet.</div>';
+    return;
+  }
+  picker.innerHTML = DATA.products.map(p => {
+    const cat = DATA.categories.find(c => c.slug === p.category) || {};
+    const checked = selectedIds.includes(p.id) ? 'checked' : '';
+    return `<label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.3rem .2rem;border-radius:6px;transition:background .15s" onmouseover="this.style.background='var(--sage-50)'" onmouseout="this.style.background=''">
+      <input type="checkbox" value="${p.id}" ${checked} style="width:15px;height:15px;accent-color:var(--sage-500);flex-shrink:0"/>
+      <span style="font-size:.85rem;color:var(--ink)">${p.name}</span>
+      <span style="font-size:.72rem;color:var(--muted);margin-left:auto">${cat.emoji||''} ${cat.label||p.category}</span>
+    </label>`;
+  }).join('');
+}
+
+function closeCollectionModal() {
+  document.getElementById('collectionModal').classList.remove('show');
+  editingCollectionId = null;
+}
+
+function saveCollection() {
+  const icon = document.getElementById('fc2-icon').value.trim();
+  const name = document.getElementById('fc2-name').value.trim();
+  if (!name) { showToast('Please enter a collection name', 'error'); return; }
+
+  const checked = [...document.querySelectorAll('#collectionProductPicker input[type=checkbox]:checked')];
+  const productIds = checked.map(cb => cb.value);
+
+  const data = {
+    id: editingCollectionId || 'col_' + Date.now(),
+    icon: icon || '📋',
+    name,
+    description: document.getElementById('fc2-desc').value.trim(),
+    productIds,
+  };
+
+  saveCollection_db(data);
+  closeCollectionModal();
+}
+
+function confirmDeleteCollection(id) {
+  const col = DATA.collections.find(c => c.id === id);
+  if (confirm(`Delete "${col?.name}"? This cannot be undone.`)) {
+    deleteCollection_db(id);
+  }
+}
+
+function deleteCollection() {
+  if (editingCollectionId) { confirmDeleteCollection(editingCollectionId); closeCollectionModal(); }
 }
 
 /* ══════════════════════════
@@ -1003,7 +1225,7 @@ function switchPanel(name, el) {
   document.getElementById('panel-' + name).classList.add('active');
   const navItem = el || document.querySelector(`[data-panel="${name}"]`);
   if (navItem) navItem.classList.add('active');
-  const titles = {dashboard:'Dashboard',products:'Products',categories:'Categories'};
+  const titles = {dashboard:'Dashboard',products:'Products',categories:'Categories',collections:'Collections'};
   document.getElementById('topBarTitle').textContent = titles[name]||name;
 }
 
@@ -1041,6 +1263,9 @@ document.getElementById('productModal').addEventListener('click', e => {
 document.getElementById('catModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeCatModal();
 });
+document.getElementById('collectionModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeCollectionModal();
+});
 
 /* ══════════════════════════
    EXPOSE TO GLOBAL (needed for inline onclick)
@@ -1065,8 +1290,14 @@ window.confirmDeleteCat = confirmDeleteCat;
 window.addHighlight = addHighlight;
 window.removeHighlight = removeHighlight;
 window.previewImage = previewImage;
+window.handleImageUpload = handleImageUpload;
 window.filterProductTable = filterProductTable;
 window.exportData = exportData;
+window.openCollectionModal = openCollectionModal;
+window.closeCollectionModal = closeCollectionModal;
+window.saveCollection = saveCollection;
+window.deleteCollection = deleteCollection;
+window.confirmDeleteCollection = confirmDeleteCollection;
 
 /* ══════════════════════════
    BOOT
