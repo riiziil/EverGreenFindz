@@ -554,14 +554,26 @@ img{display:block;width:100%;object-fit:cover}
   </div>
 </div>
 
-<script>
+<script type="module">
 /* ══════════════════════════
-   CONFIG
+   FIREBASE
 ══════════════════════════ */
-const API_BASE = '';
-const ADMIN_SECRET = localStorage.getItem('pw_secret') || '';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-// Credentials (change these or move to env in production)
+const firebaseConfig = {
+  apiKey: "AIzaSyDSAx-lVnZt1UNNt6GMDrxV3cJxT9DNQjk",
+  authDomain: "evergreenfindz-79ecc.firebaseapp.com",
+  projectId: "evergreenfindz-79ecc",
+  storageBucket: "evergreenfindz-79ecc.firebasestorage.app",
+  messagingSenderId: "473066087148",
+  appId: "1:473066087148:web:b2446d33d49ace23817bc9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Credentials
 const ADMIN_USER = 'iamevergreen';
 const ADMIN_PASS = '100516050904.';
 
@@ -572,8 +584,6 @@ function doLogin() {
   const u = document.getElementById('loginUser').value.trim();
   const p = document.getElementById('loginPass').value;
   if (u === ADMIN_USER && p === ADMIN_PASS) {
-    const secret = '100516050904.'; // must match ADMIN_SECRET env var on Netlify
-    localStorage.setItem('pw_secret', secret);
     localStorage.setItem('pw_auth', '1');
     document.getElementById('loginScreen').classList.remove('show');
     document.getElementById('adminShell').style.display = 'flex';
@@ -605,50 +615,68 @@ let editingProductId = null;
 let editingCatId = null;
 
 /* ══════════════════════════
-   INIT
+   INIT — realtime listeners
 ══════════════════════════ */
-async function init() {
-  await loadData();
-  renderDashboard();
-  renderProductTable();
-  renderCatTable();
-  populateCatSelects();
+function init() {
+  // Listen to categories in realtime
+  onSnapshot(collection(db, 'categories'), (snap) => {
+    DATA.categories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCatTable();
+    renderDashboard();
+    populateCatSelects();
+  });
+
+  // Listen to products in realtime
+  onSnapshot(query(collection(db, 'products'), orderBy('createdAt', 'desc')), (snap) => {
+    DATA.products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderProductTable();
+    renderDashboard();
+    setSaveStatus('saved', '✓ Live');
+  }, (err) => {
+    setSaveStatus('error', '⚠ Connection error');
+    console.error(err);
+  });
 }
 
-async function loadData() {
+async function saveProduct_db(data) {
+  setSaveStatus('saving', 'Saving…');
   try {
-    const secret = localStorage.getItem('pw_secret') || 'changeme123';
-    const res = await fetch(API_BASE + '/.netlify/functions/get-data', {
-      headers: { 'x-admin-secret': secret }
-    });
-    if (!res.ok) throw new Error();
-    DATA = await res.json();
-    setSaveStatus('saved', '✓ Synced');
-  } catch {
-    // fallback to localStorage
-    const cached = localStorage.getItem('pw_data');
-    if (cached) { DATA = JSON.parse(cached); setSaveStatus('', '(offline mode)'); }
-    else { DATA = { categories: [], products: [] }; }
+    await setDoc(doc(db, 'products', data.id), data);
+    setSaveStatus('saved', '✓ Saved');
+    showToast('Product saved!', 'success');
+  } catch(e) {
+    setSaveStatus('error', '⚠ Save failed');
+    showToast('Error saving: ' + e.message, 'error');
   }
 }
 
-async function saveData() {
-  setSaveStatus('saving', 'Saving…');
-  // always save to localStorage as backup
-  localStorage.setItem('pw_data', JSON.stringify(DATA));
+async function deleteProduct_db(id) {
   try {
-    const secret = localStorage.getItem('pw_secret') || 'changeme123';
-    const res = await fetch(API_BASE + '/.netlify/functions/save-data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
-      body: JSON.stringify(DATA),
-    });
-    if (!res.ok) throw new Error();
+    await deleteDoc(doc(db, 'products', id));
+    showToast('Product deleted', 'success');
+  } catch(e) {
+    showToast('Error deleting: ' + e.message, 'error');
+  }
+}
+
+async function saveCategory_db(data) {
+  setSaveStatus('saving', 'Saving…');
+  try {
+    await setDoc(doc(db, 'categories', data.id), data);
     setSaveStatus('saved', '✓ Saved');
-    showToast('Changes saved!', 'success');
-  } catch {
-    setSaveStatus('error', '⚠ Save failed (saved locally)');
-    showToast('Saved locally — could not reach server', 'error');
+    showToast('Category saved!', 'success');
+  } catch(e) {
+    setSaveStatus('error', '⚠ Save failed');
+    showToast('Error saving: ' + e.message, 'error');
+  }
+}
+
+async function deleteCategory_db(id) {
+  try {
+    await deleteDoc(doc(db, 'categories', id));
+    showToast('Category deleted', 'success');
+  } catch(e) {
+    showToast('Error deleting: ' + e.message, 'error');
   }
 }
 
@@ -820,7 +848,6 @@ function saveProduct() {
   }
 
   const featured = document.getElementById('f-featured').value === 'true';
-  if (featured) DATA.products.forEach(p=>p.featured=false);
 
   const data = {
     id: editingProductId || 'prod_' + Date.now(),
@@ -837,27 +864,25 @@ function saveProduct() {
     shopeeLink: document.getElementById('f-shopee').value.trim(),
     featured,
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+    createdAt: editingProductId
+      ? (DATA.products.find(p=>p.id===editingProductId)?.createdAt || Date.now())
+      : Date.now(),
   };
 
-  if (editingProductId) {
-    const idx = DATA.products.findIndex(p=>p.id===editingProductId);
-    DATA.products[idx] = data;
-  } else {
-    DATA.products.unshift(data);
+  // If setting as featured, unfeature others in Firebase
+  if (featured) {
+    DATA.products.filter(p=>p.featured && p.id !== data.id).forEach(p => {
+      setDoc(doc(db, 'products', p.id), { ...p, featured: false });
+    });
   }
 
-  saveData();
+  saveProduct_db(data);
   closeProductModal();
-  renderProductTable();
-  renderDashboard();
 }
 
 function confirmDeleteProduct(id) {
   if (confirm('Delete this product? This cannot be undone.')) {
-    DATA.products = DATA.products.filter(p=>p.id!==id);
-    saveData();
-    renderProductTable();
-    renderDashboard();
+    deleteProduct_db(id);
   }
 }
 
@@ -907,7 +932,6 @@ function saveCategory() {
     showToast('Please fill in Emoji, Label, and Slug', 'error');
     return;
   }
-  // check slug uniqueness
   const dup = DATA.categories.find(c=>c.slug===slug && c.id!==editingCatId);
   if (dup) { showToast('Slug already exists — choose a different one', 'error'); return; }
 
@@ -917,32 +941,18 @@ function saveCategory() {
     description: document.getElementById('fc-desc').value.trim(),
   };
 
-  if (editingCatId) {
-    const idx = DATA.categories.findIndex(c=>c.id===editingCatId);
-    DATA.categories[idx] = data;
-  } else {
-    DATA.categories.push(data);
-  }
-
-  saveData();
+  saveCategory_db(data);
   closeCatModal();
-  renderCatTable();
-  renderDashboard();
-  populateCatSelects();
 }
 
 function confirmDeleteCat(id) {
   const cat = DATA.categories.find(c=>c.id===id);
   const count = DATA.products.filter(p=>p.category===cat?.slug).length;
   const msg = count > 0
-    ? `Delete "${cat.label}"? It has ${count} product(s) assigned to it. Those products won't be deleted but will lose their category.`
+    ? `Delete "${cat.label}"? It has ${count} product(s) assigned to it.`
     : `Delete "${cat?.label}"? This cannot be undone.`;
   if (confirm(msg)) {
-    DATA.categories = DATA.categories.filter(c=>c.id!==id);
-    saveData();
-    renderCatTable();
-    renderDashboard();
-    populateCatSelects();
+    deleteCategory_db(id);
   }
 }
 
@@ -1031,6 +1041,32 @@ document.getElementById('productModal').addEventListener('click', e => {
 document.getElementById('catModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeCatModal();
 });
+
+/* ══════════════════════════
+   EXPOSE TO GLOBAL (needed for inline onclick)
+══════════════════════════ */
+window.doLogin = doLogin;
+window.doLogout = doLogout;
+window.switchPanel = switchPanel;
+window.toggleSidebar = toggleSidebar;
+window.openExternal = openExternal;
+window.openProductModal = openProductModal;
+window.closeProductModal = closeProductModal;
+window.editProduct = editProduct;
+window.saveProduct = saveProduct;
+window.deleteProduct = deleteProduct;
+window.confirmDeleteProduct = confirmDeleteProduct;
+window.openCatModal = openCatModal;
+window.closeCatModal = closeCatModal;
+window.editCategory = editCategory;
+window.saveCategory = saveCategory;
+window.deleteCategory = deleteCategory;
+window.confirmDeleteCat = confirmDeleteCat;
+window.addHighlight = addHighlight;
+window.removeHighlight = removeHighlight;
+window.previewImage = previewImage;
+window.filterProductTable = filterProductTable;
+window.exportData = exportData;
 
 /* ══════════════════════════
    BOOT
