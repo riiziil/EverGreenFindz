@@ -16,7 +16,7 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const dataPath = path.join(process.env.LAMBDA_TASK_ROOT || path.join(__dirname, '../..'), 'data/products.json');
+    const dataPath = path.resolve(__dirname, '..', '..', 'data', 'products.json');
     const raw = fs.readFileSync(dataPath, 'utf8');
     return {
       statusCode: 200,
@@ -27,7 +27,11 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Could not read data: ' + err.message }),
+      body: JSON.stringify({ 
+        error: 'Could not read data: ' + err.message,
+        __dirname,
+        resolved: path.resolve(__dirname, '..', '..', 'data', 'products.json')
+      }),
     };
   }
 };
